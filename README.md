@@ -11,7 +11,7 @@ Este é um microserviço responsável por gerenciar autenticação e autorizaç�
 - **Node.js** - Runtime JavaScript
 - **TypeScript** - Superset tipado do JavaScript
 - **Express** - Framework web para Node.js
-- **MySQL** - Banco de dados relacional
+- **PostgreSQL** - Banco de dados relacional
 - **Docker** - Containerização
 - **JWT** - JSON Web Tokens para autenticação
 
@@ -69,21 +69,46 @@ cp .env.example .env
 
 ## 🐳 Executando com Docker
 
-1. Inicie o banco de dados MySQL:
+### Usando Docker Compose (Recomendado)
+
+1. Inicie todos os serviços:
+
+```bash
+docker-compose up -d
+```
+
+2. A aplicação estará disponível em `http://localhost:3000`
+
+### Usando Docker diretamente
+
+1. Construa a imagem:
+
+```bash
+docker build -t sol-ms-auth .
+```
+
+2. Inicie o banco de dados:
 
 ```bash
 docker-compose up -d mysql
 ```
 
-2. Execute a aplicação:
+3. Execute a aplicação:
 
 ```bash
-npm run dev
+docker run -p 3000:3000 --env-file .env --network sol-ms-auth_default sol-ms-auth
 ```
 
 ## 🚀 Scripts Disponíveis
 
 - `npm run dev` - Executa a aplicação em modo de desenvolvimento
+- `npm run build` - Compila o TypeScript para JavaScript
+- `npm start` - Inicia a aplicação em produção
+- `npm test` - Executa os testes unitários com cobertura
+- `npm run test:watch` - Executa os testes em modo watch
+- `npm run lint` - Executa a verificação de estilo de código
+- `npm run lint:fix` - Corrige automaticamente os problemas de estilo
+- `npm run typecheck` - Verifica tipos sem gerar arquivos de build
 
 ## 🔧 Configuração
 
@@ -104,10 +129,10 @@ JWT_EXPIRES_IN=24h
 
 ### Banco de Dados
 
-O projeto utiliza MySQL como banco de dados. A configuração do Docker Compose inclui:
+O projeto utiliza PostgreSQL como banco de dados. A configuração do Docker Compose inclui:
 
 - **Host**: localhost
-- **Porta**: 3306
+- **Porta**: 5432
 - **Database**: sol_ms_auth
 - **Usuário**: changeme
 - **Senha**: changeme
