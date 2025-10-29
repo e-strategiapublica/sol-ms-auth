@@ -1,112 +1,63 @@
 import type { Request, Response } from "express";
 import authService from "../services/auth.service";
 import type { AuthRequest, EmailSendRequest, EmailAuthParams, PasswordAuthParams } from "../types/auth";
+import { ErrorHandler } from "../handlers/error.handler";
 
-const authenticateWithEmail = async (req: Request, res: Response): Promise<void> => {
-  try {
-    const { identifier, params }: AuthRequest = req.body;
-    const { code }: EmailAuthParams = params;
+// SRP: Controller focado apenas em coordenar requisições HTTP
+class AuthController {
+  // SRP: Método com responsabilidade única - autenticação por email
+  async authenticateWithEmail(req: Request, res: Response): Promise<void> {
+    try {
+      const { identifier, params }: AuthRequest = req.body;
+      const { code } = params as EmailAuthParams;
 
-    const existingToken = req.headers.authorization?.replace("Bearer ", "");
-    const result = await authService.authenticateWithEmail(identifier, code, existingToken);
+      const existingToken = req.headers.authorization?.replace("Bearer ", "");
+      const result = await authService.authenticateWithEmail(identifier, code, existingToken);
 
-    res.set("Link", `</users/${result.user_id}>; rel="related"`);
-    res.status(200).json({ token: result.token });
-  } catch (error) {
-    if (error instanceof authService.UserNotFoundError) {
-      res.status(401).json({
-        error: "Unauthorized",
-        message: "Invalid credentials",
-        statusCode: 401,
-      });
-    } else if (error instanceof authService.AuthenticationError) {
-      res.status(401).json({
-        error: "Unauthorized",
-        message: error.message,
-        statusCode: 401,
-      });
-    } else {
-      console.error("Authentication error:", error);
-      res.status(500).json({
-        error: "Internal Server Error",
-        message: "An unexpected error occurred",
-        statusCode: 500,
-      });
+      res.set("Link", `</users/${result.user_id}>; rel="related"`);
+      res.status(200).json({ token: result.token });
+    } catch (error) {
+      ErrorHandler.handleAuthError(error, res);
     }
   }
-};
 
-const sendEmailCode = async (req: Request, res: Response): Promise<void> => {
-  try {
-    const { identifier }: EmailSendRequest = req.body;
+  // SRP: Método com responsabilidade única - envio de código por email
+  async sendEmailCode(req: Request, res: Response): Promise<void> {
+    try {
+      const { identifier }: EmailSendRequest = req.body;
 
-    await authService.sendEmailAuthCode(identifier);
+      await authService.sendEmailAuthCode(identifier);
 
-    res.status(200).json({
-      message: "Email code sent successfully",
-    });
-  } catch (error) {
-    if (error instanceof authService.UserNotFoundError) {
-      res.status(404).json({
-        error: "Not Found",
-        message: "User not found",
-        statusCode: 404,
+      res.status(200).json({
+        message: "Email code sent successfully",
       });
-    } else if (error instanceof authService.AuthenticationError) {
-      res.status(401).json({
-        error: "Unauthorized",
-        message: error.message,
-        statusCode: 401,
-      });
-    } else {
-      console.error("Send email code error:", error);
-      res.status(500).json({
-        error: "Internal Server Error",
-        message: "Failed to send email code",
-        statusCode: 500,
-      });
+    } catch (error) {
+      ErrorHandler.handleEmailSendError(error, res);
     }
   }
-};
 
-const authenticateWithPassword = async (req: Request, res: Response): Promise<void> => {
-  try {
-    const { identifier, params }: AuthRequest = req.body;
-    const { password }: PasswordAuthParams = params;
+  // SRP: Método com responsabilidade única - autenticação por senha
+  async authenticateWithPassword(req: Request, res: Response): Promise<void> {
+    try {
+      const { identifier, params }: AuthRequest = req.body;
+      const { password } = params as PasswordAuthParams;
 
-    const existingToken = req.headers.authorization?.replace("Bearer ", "");
-    const result = await authService.authenticateWithPassword(identifier, password, existingToken);
+      const existingToken = req.headers.authorization?.replace("Bearer ", "");
+      const result = await authService.authenticateWithPassword(identifier, password, existingToken);
 
-    res.set("Link", `</users/${result.user_id}>; rel="related"`);
-    res.status(200).json({ token: result.token });
-  } catch (error) {
-    if (error instanceof authService.UserNotFoundError) {
-      res.status(401).json({
-        error: "Unauthorized",
-        message: "Invalid credentials",
-        statusCode: 401,
-      });
-    } else if (error instanceof authService.AuthenticationError) {
-      res.status(401).json({
-        error: "Unauthorized",
-        message: error.message,
-        statusCode: 401,
-      });
-    } else {
-      console.error("Password authentication error:", error);
-      res.status(500).json({
-        error: "Internal Server Error",
-        message: "An unexpected error occurred",
-        statusCode: 500,
-      });
+      res.set("Link", `</users/${result.user_id}>; rel="related"`);
+      res.status(200).json({ token: result.token });
+    } catch (error) {
+      ErrorHandler.handleAuthError(error, res);
     }
   }
-};
+}
 
-const authController = {
-  authenticateWithEmail,
-  sendEmailCode,
-  authenticateWithPassword,
-};
+// Instância singleton para exportação
+const authController = new AuthController();
 
-export default authController;
+export default {
+  authenticateWithEmail: authController.authenticateWithEmail.bind(authController),
+  sendEmailCode: authController.sendEmailCode.bind(authController),
+  authenticateWithPassword: authController.authenticateWithPassword.bind(authController),
+};

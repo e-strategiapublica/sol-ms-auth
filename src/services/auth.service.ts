@@ -1,172 +1,119 @@
-import userRepository from "../repositories/user.repository";
-import { generateToken, updateTokenWithMethod, type JWTPayload } from "../config/jwt";
-import { comparePassword, generateEmailCode, isEmailCodeExpired } from "../utils/crypto";
-import { sendEmailCode } from "../utils/email";
-import type { AuthResponse, EmailCodeData } from "../types/auth";
+import type { 
+  IUserRepository, 
+  IEmailService, 
+  ICryptoService, 
+  IAuthConfig,
+  IAuthenticationStrategy,
+  IUserValidator
+} from "../interfaces/auth.interfaces";
+import type { AuthResponse } from "../types/auth";
+import { AuthenticationError, UserNotFoundError } from "./user-validator.service";
 
-class AuthenticationError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = "AuthenticationError";
+// SRP + DIP: AuthService agora usa injeção de dependência e tem responsabilidades bem definidas
+export class AuthService {
+  constructor(
+    private userRepository: IUserRepository,
+    private emailService: IEmailService,
+    private cryptoService: ICryptoService,
+    private config: IAuthConfig,
+    private userValidator: IUserValidator,
+    private emailAuthStrategy: IAuthenticationStrategy,
+    private passwordAuthStrategy: IAuthenticationStrategy
+  ) {}
+
+  async authenticateWithEmail(
+    identifier: string,
+    code: string,
+    existingToken?: string
+  ): Promise<AuthResponse> {
+    return await this.emailAuthStrategy.authenticate(
+      identifier, 
+      { code }, 
+      existingToken
+    );
+  }
+
+  async authenticateWithPassword(
+    identifier: string,
+    password: string,
+    existingToken?: string
+  ): Promise<AuthResponse> {
+    return await this.passwordAuthStrategy.authenticate(
+      identifier, 
+      { password }, 
+      existingToken
+    );
+  }
+
+  async sendEmailAuthCode(identifier: string): Promise<void> {
+    const user = await this.userRepository.findByEmail(identifier);
+    
+    this.userValidator.validateUserAccess(user);
+
+    const code = this.cryptoService.generateEmailCode();
+    const expirationSeconds = this.config.getEmailCodeExpiration();
+    const expiresAt = new Date(Date.now() + expirationSeconds * 1000);
+
+    await this.userRepository.updateEmailCode(identifier, code, expiresAt);
+    await this.emailService.sendCode(identifier, code);
   }
 }
 
-class UserNotFoundError extends Error {
-  constructor(message: string = "User not found") {
-    super(message);
-    this.name = "UserNotFoundError";
-  }
-}
+// Factory para criar instância com dependências
+export const createAuthService = (): AuthService => {
+  // Imports das implementações concretas
+  const { UserRepositoryAdapter } = require("../adapters/user-repository.adapter");
+  const { EmailService } = require("./email.service");
+  const { CryptoService } = require("./crypto.service");
+  const { AuthConfig } = require("../config/auth.config");
+  const { UserValidator } = require("./user-validator.service");
+  const { TokenService } = require("./token.service");
+  const { EmailAuthStrategy } = require("../strategies/email-auth.strategy");
+  const { PasswordAuthStrategy } = require("../strategies/password-auth.strategy");
 
-const authenticateWithEmail = async (
-  identifier: string,
-  code: string,
-  existingToken?: string
-): Promise<AuthResponse> => {
-  const user = await userRepository.findByEmail(identifier);
-  
-  if (!user) {
-    throw new UserNotFoundError();
-  }
+  // Criação das dependências
+  const userRepository = new UserRepositoryAdapter();
+  const emailService = new EmailService();
+  const cryptoService = new CryptoService();
+  const config = new AuthConfig();
+  const userValidator = new UserValidator(config);
+  const tokenService = new TokenService();
 
-  if (user.is_blocked) {
-    throw new AuthenticationError("User is blocked");
-  }
+  // Criação das estratégias
+  const emailAuthStrategy = new EmailAuthStrategy(
+    userRepository,
+    tokenService,
+    cryptoService,
+    userValidator
+  );
 
-  if (!user.email_code || !user.email_code_expires_at) {
-    throw new AuthenticationError("No active email code");
-  }
+  const passwordAuthStrategy = new PasswordAuthStrategy(
+    userRepository,
+    tokenService,
+    cryptoService,
+    userValidator
+  );
 
-  if (user.email_code !== code) {
-    throw new AuthenticationError("Invalid email code");
-  }
-
-  if (isEmailCodeExpired(new Date(user.email_code_expires_at))) {
-    throw new AuthenticationError("Email code expired");
-  }
-
-  // Reset failed attempts on successful authentication
-  await userRepository.resetFailedAttempts(user.id);
-
-  const timestamp = Math.floor(Date.now() / 1000);
-  let token: string;
-
-  if (existingToken) {
-    try {
-      token = updateTokenWithMethod(existingToken, "email", timestamp);
-    } catch (error) {
-      // If token is invalid, create a new one
-      const payload: JWTPayload = {
-        sub: user.id.toString(),
-        nbf: timestamp,
-        methods: { email: timestamp },
-      };
-      token = generateToken(payload);
-    }
-  } else {
-    const payload: JWTPayload = {
-      sub: user.id.toString(),
-      nbf: timestamp,
-      methods: { email: timestamp },
-    };
-    token = generateToken(payload);
-  }
-
-  return {
-    token,
-    user_id: user.id.toString(),
-  };
+  return new AuthService(
+    userRepository,
+    emailService,
+    cryptoService,
+    config,
+    userValidator,
+    emailAuthStrategy,
+    passwordAuthStrategy
+  );
 };
 
-const authenticateWithPassword = async (
-  identifier: string,
-  password: string,
-  existingToken?: string
-): Promise<AuthResponse> => {
-  const user = await userRepository.findByEmail(identifier);
-  
-  if (!user) {
-    throw new UserNotFoundError();
-  }
+// Instância singleton para compatibilidade com código existente
+const authService = createAuthService();
 
-  if (user.is_blocked) {
-    throw new AuthenticationError("User is blocked");
-  }
-
-  if (!user.password_hash || !user.password_salt) {
-    throw new AuthenticationError("Password not set for this user");
-  }
-
-  const maxAttempts = parseInt(process.env.MAX_LOGIN_ATTEMPTS || "5");
-  if (user.failed_login_attempts >= maxAttempts) {
-    throw new AuthenticationError("Too many failed attempts. User is temporarily blocked");
-  }
-
-  const isValidPassword = comparePassword(password, user.password_hash);
-  
-  if (!isValidPassword) {
-    await userRepository.incrementFailedAttempts(user.id);
-    throw new AuthenticationError("Invalid password");
-  }
-
-  // Reset failed attempts on successful authentication
-  await userRepository.resetFailedAttempts(user.id);
-
-  const timestamp = Math.floor(Date.now() / 1000);
-  let token: string;
-
-  if (existingToken) {
-    try {
-      token = updateTokenWithMethod(existingToken, "pass", timestamp);
-    } catch (error) {
-      // If token is invalid, create a new one
-      const payload: JWTPayload = {
-        sub: user.id.toString(),
-        nbf: timestamp,
-        methods: { pass: timestamp },
-      };
-      token = generateToken(payload);
-    }
-  } else {
-    const payload: JWTPayload = {
-      sub: user.id.toString(),
-      nbf: timestamp,
-      methods: { pass: timestamp },
-    };
-    token = generateToken(payload);
-  }
-
-  return {
-    token,
-    user_id: user.id.toString(),
-  };
-};
-
-const sendEmailAuthCode = async (identifier: string): Promise<void> => {
-  const user = await userRepository.findByEmail(identifier);
-  
-  if (!user) {
-    throw new UserNotFoundError();
-  }
-
-  if (user.is_blocked) {
-    throw new AuthenticationError("User is blocked");
-  }
-
-  const code = generateEmailCode();
-  const expirationMinutes = parseInt(process.env.EMAIL_CODE_EXPIRATION || "300");
-  const expiresAt = new Date(Date.now() + expirationMinutes * 1000);
-
-  await userRepository.updateEmailCode(identifier, code, expiresAt);
-  await sendEmailCode(identifier, code);
-};
-
-const authService = {
-  authenticateWithEmail,
-  authenticateWithPassword,
-  sendEmailAuthCode,
+// Exportações para compatibilidade
+export { AuthenticationError, UserNotFoundError };
+export default {
+  authenticateWithEmail: authService.authenticateWithEmail.bind(authService),
+  authenticateWithPassword: authService.authenticateWithPassword.bind(authService),
+  sendEmailAuthCode: authService.sendEmailAuthCode.bind(authService),
   AuthenticationError,
   UserNotFoundError,
 };
-
-export default authService;
