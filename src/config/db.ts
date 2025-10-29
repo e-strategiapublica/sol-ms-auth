@@ -6,8 +6,8 @@ const dialect = new PostgresDialect({
   pool: new Pool({
     database: "sol_ms_auth",
     host: "localhost",
-    user: "changeme",
-    password: "changeme",
+    user: "postgres",
+    password: "admin123",
     port: 5432,
     max: 10,
   }),
