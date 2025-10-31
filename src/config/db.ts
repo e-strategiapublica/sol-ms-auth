@@ -7,7 +7,7 @@ const dialect = new PostgresDialect({
     database: "sol_ms_auth",
     host: "localhost",
     user: "postgres",
-    password: "admin123",
+    password: "senha",
     port: 5432,
     max: 10,
   }),
