@@ -1,5 +1,5 @@
-import { db } from "../config/db";
-import type { NewUser, UserUpdate } from "../types/database";
+import { db } from "../config/db.js";
+import type { NewUser, UserUpdate } from "../types/database.js";
 
 export const create = async (userData: NewUser) => {
   const result = await db

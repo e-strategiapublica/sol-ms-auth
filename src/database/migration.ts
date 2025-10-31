@@ -12,6 +12,7 @@ import { db } from "../config/db.js";
 
 async function migrateToLatest() {
   console.log("Running migrations...");
+  const arg = process.argv[2];
 
   const migrator = new Migrator({
     db,
@@ -21,7 +22,13 @@ async function migrateToLatest() {
       migrationFolder: path.join(__dirname, "migrations"),
     }),
   });
-  const { error, results } = await migrator.migrateToLatest();
+
+  const directionToMigrate = arg !== "up" && arg !== "down" ? "up" : arg;
+
+  const { error, results } =
+    directionToMigrate === "up"
+      ? await migrator.migrateToLatest()
+      : await migrator.migrateDown();
 
   results?.forEach((it) => {
     if (it.status === "Success") {

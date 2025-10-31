@@ -1,9 +1,24 @@
 import type { Request, Response } from "express";
-import userService from "../services/user.service";
-import type { NewUser } from "../types/database";
+import userService from "../services/user.service.js";
+import type { NewUser } from "../types/database.js";
+import bcrypt from "bcryptjs";
+import typia from "typia";
+import type { ICreateUserRequest } from "../types/index.d.js";
 
 export const createUser = async (req: Request, res: Response) => {
-  const userData: NewUser = req.body;
+  const validation = typia.validate<ICreateUserRequest>(req.body);
+  if (!validation.success) {
+    return res.status(400).json({
+      error: "Validation Error",
+      details: validation.errors,
+    });
+  }
+  const password_hash = await bcrypt.hash(validation.data.password, 10);
+  const userData: NewUser = {
+    email: validation.data.email,
+    password_hash: password_hash,
+  };
+
   const newUser = await userService.createUser(userData);
   res.status(201).json(newUser);
 };

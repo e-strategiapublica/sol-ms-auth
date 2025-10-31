@@ -1,5 +1,5 @@
-import * as userRepository from "../repositories/user.repository";
-import type { NewUser, UserUpdate } from "../types/database";
+import * as userRepository from "../repositories/user.repository.js";
+import type { NewUser, UserUpdate } from "../types/database.js";
 
 const createUser = async (userData: NewUser) => {
   const newUser = await userRepository.create(userData);
