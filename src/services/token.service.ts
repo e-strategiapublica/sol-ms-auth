@@ -1,7 +1,6 @@
 import { generateToken, updateTokenWithMethod, type JWTPayload } from "../config/jwt";
 import type { ITokenService } from "../interfaces/auth.interfaces";
 
-// SRP: Responsabilidade única - gerenciar tokens
 export class TokenService implements ITokenService {
   generateToken(payload: JWTPayload): string {
     return generateToken(payload);

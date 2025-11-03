@@ -1,6 +1,5 @@
 import type { ISeedRunner, ISeed, ISeedLogger } from "../interfaces/seed.interfaces.js";
 
-// SRP: Responsabilidade única - execução de seeds
 export class SeedRunnerService implements ISeedRunner {
   constructor(
     private logger: ISeedLogger,

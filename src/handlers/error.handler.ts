@@ -1,7 +1,6 @@
 import type { Response } from "express";
 import { AuthenticationError, UserNotFoundError } from "../services/user-validator.service";
 
-// SRP: Responsabilidade única - tratamento de erros
 export class ErrorHandler {
   static handleAuthError(error: unknown, res: Response): void {
     if (error instanceof UserNotFoundError) {

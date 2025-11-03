@@ -5,7 +5,6 @@ import { EmailTemplateService } from "./email-template.service";
 import { EmailLoggerService } from "./email-logger.service";
 import { EnvironmentService } from "./environment.service";
 
-// SRP + DIP: Responsabilidade única com injeção de dependência
 export class EmailService implements IEmailService {
   private emailProvider: IEmailProvider;
   private templateService: EmailTemplateService;

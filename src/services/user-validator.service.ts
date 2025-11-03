@@ -14,7 +14,6 @@ export class UserNotFoundError extends Error {
   }
 }
 
-// SRP: Responsabilidade única - validação de usuários
 export class UserValidator implements IUserValidator {
   constructor(private config: IAuthConfig) {}
 

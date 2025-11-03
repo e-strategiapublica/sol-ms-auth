@@ -1,7 +1,6 @@
 import userRepository from "../repositories/user.repository";
 import type { IUserRepository } from "../interfaces/auth.interfaces";
 
-// DIP: Adapter para o repositório existente
 export class UserRepositoryAdapter implements IUserRepository {
   async findByEmail(email: string): Promise<any> {
     return await userRepository.findByEmail(email);

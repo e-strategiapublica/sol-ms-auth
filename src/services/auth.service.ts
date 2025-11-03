@@ -9,7 +9,6 @@ import type {
 import type { AuthResponse } from "../types/auth";
 import { AuthenticationError, UserNotFoundError } from "./user-validator.service";
 
-// SRP + DIP: AuthService agora usa injeção de dependência e tem responsabilidades bem definidas
 export class AuthService {
   constructor(
     private userRepository: IUserRepository,

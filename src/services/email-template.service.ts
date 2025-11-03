@@ -1,6 +1,5 @@
 import type { EmailOptions, IEnvironmentDetector } from "../interfaces/email.interfaces";
 
-// SRP: Responsabilidade única - criar templates de email
 export class EmailTemplateService {
   constructor(private environmentService: IEnvironmentDetector) {}
 

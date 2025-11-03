@@ -135,13 +135,19 @@ export const createAuthService = (): AuthService => {
 ```
 src/
 ├── interfaces/
-│   └── auth.interfaces.ts          # Contratos (DIP)
+│   ├── auth.interfaces.ts          # Contratos de autenticação (DIP)
+│   ├── email.interfaces.ts         # Contratos de email (ISP)
+│   └── seed.interfaces.ts          # Contratos de seeds (DIP)
 ├── services/
 │   ├── auth.service.ts             # Orquestrador principal
 │   ├── token.service.ts            # SRP - Tokens
 │   ├── crypto.service.ts           # SRP - Criptografia
 │   ├── email.service.ts            # SRP - Email
-│   └── user-validator.service.ts   # SRP - Validação
+│   ├── user-validator.service.ts   # SRP - Validação
+│   ├── seed-logger.service.ts      # SRP - Logging de seeds
+│   ├── seed-runner.service.ts      # SRP - Execução de seeds
+│   ├── user-generator.service.ts   # SRP - Geração de usuários
+│   └── data-cleaner.service.ts     # SRP - Limpeza de dados
 ├── strategies/
 │   ├── email-auth.strategy.ts      # OCP - Estratégia email
 │   └── password-auth.strategy.ts   # OCP - Estratégia senha
@@ -150,10 +156,55 @@ src/
 ├── handlers/
 │   └── error.handler.ts            # SRP - Tratamento de erros
 ├── config/
-│   └── auth.config.ts              # ISP - Configurações específicas
+│   ├── auth.config.ts              # ISP - Configurações de auth
+│   └── seed.config.ts              # ISP - Configurações de seeds
+├── database/
+│   ├── seeder.ts                   # Orquestrador SOLID de seeds
+│   └── seeds/
+│       └── 001_auth_test_users.ts  # Seed SOLID para usuários
 └── controllers/
     └── auth.controller.ts          # SRP - Coordenação HTTP
 ```
+
+## Seeds SOLID
+
+### **Implementação de Seeds com Arquitetura SOLID**
+
+Os seeds do projeto seguem rigorosamente os princípios SOLID:
+
+#### **Single Responsibility Principle (SRP)**
+- **`SeedLoggerService`**: Responsável apenas por logging de seeds
+- **`UserGeneratorService`**: Responsável apenas por gerar usuários de teste
+- **`DataCleanerService`**: Responsável apenas por limpeza de dados
+- **`SeedRunnerService`**: Responsável apenas por executar seeds
+- **`AuthTestUsersSeed`**: Responsável apenas por criar usuários de auth
+
+#### **Open/Closed Principle (OCP)**
+- Facilmente extensível para novos tipos de seeds
+- Basta implementar `ISeed` e registrar no `SeedRunnerService`
+- Novos seeds podem ser adicionados sem modificar código existente
+
+#### **Liskov Substitution Principle (LSP)**
+- Qualquer implementação de `ISeed` pode ser usada intercambiavelmente
+- Implementações de `ISeedLogger`, `IUserGenerator`, etc. são substituíveis
+
+#### **Interface Segregation Principle (ISP)**
+- **`ISeed`**: Interface específica para seeds
+- **`ISeedLogger`**: Interface específica para logging
+- **`IUserGenerator`**: Interface específica para geração de usuários
+- **`IDataCleaner`**: Interface específica para limpeza
+- **`ISeedConfig`**: Interface específica para configuração
+
+#### **Dependency Inversion Principle (DIP)**
+- Seeds dependem de abstrações (interfaces), não implementações
+- Injeção de dependência via factory pattern
+- Facilita testes unitários com mocks
+
+### **Benefícios dos Seeds SOLID**
+- **Testabilidade**: Fácil criação de mocks para cada serviço
+- **Manutenibilidade**: Código organizado e responsabilidades claras
+- **Extensibilidade**: Novos seeds facilmente adicionáveis
+- **Reutilização**: Serviços podem ser usados em outros contextos
 
 ## Compatibilidade
 

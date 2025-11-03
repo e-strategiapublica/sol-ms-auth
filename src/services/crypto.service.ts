@@ -1,7 +1,6 @@
 import { comparePassword, generateEmailCode, isEmailCodeExpired } from "../utils/crypto";
 import type { ICryptoService } from "../interfaces/auth.interfaces";
 
-// SRP: Responsabilidade única - operações criptográficas
 export class CryptoService implements ICryptoService {
   comparePassword(password: string, hash: string): boolean {
     return comparePassword(password, hash);

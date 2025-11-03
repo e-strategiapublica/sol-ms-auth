@@ -3,9 +3,7 @@ import authService from "../services/auth.service";
 import type { AuthRequest, EmailSendRequest, EmailAuthParams, PasswordAuthParams } from "../types/auth";
 import { ErrorHandler } from "../handlers/error.handler";
 
-// SRP: Controller focado apenas em coordenar requisições HTTP
 class AuthController {
-  // SRP: Método com responsabilidade única - autenticação por email
   async authenticateWithEmail(req: Request, res: Response): Promise<void> {
     try {
       const { identifier, params }: AuthRequest = req.body;
@@ -21,7 +19,6 @@ class AuthController {
     }
   }
 
-  // SRP: Método com responsabilidade única - envio de código por email
   async sendEmailCode(req: Request, res: Response): Promise<void> {
     try {
       const { identifier }: EmailSendRequest = req.body;
@@ -36,7 +33,6 @@ class AuthController {
     }
   }
 
-  // SRP: Método com responsabilidade única - autenticação por senha
   async authenticateWithPassword(req: Request, res: Response): Promise<void> {
     try {
       const { identifier, params }: AuthRequest = req.body;

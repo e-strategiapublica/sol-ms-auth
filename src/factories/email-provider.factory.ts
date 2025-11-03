@@ -6,7 +6,6 @@ import { SmtpProvider } from "../providers/smtp.provider";
 export class EmailProviderFactory {
   constructor(private environmentService: IEnvironmentDetector) {}
 
-  // SRP: Responsabilidade única - criar provedor de email
   createProvider(): IEmailProvider {
     // Em desenvolvimento sem credenciais SMTP: usa MailHog
     if (this.environmentService.isDevelopment() && !this.hasSmtpCredentials()) {

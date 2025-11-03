@@ -1,7 +1,6 @@
 import nodemailer from "nodemailer";
 import type { IEmailProvider, IEmailTransporter, EmailConfig } from "../interfaces/email.interfaces";
 
-// SRP: Responsabilidade única - provedor SMTP
 export class SmtpProvider implements IEmailProvider {
   createTransporter(): IEmailTransporter {
     const config: EmailConfig = {

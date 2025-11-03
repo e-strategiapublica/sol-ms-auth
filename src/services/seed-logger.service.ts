@@ -1,6 +1,5 @@
 import type { ISeedLogger } from "../interfaces/seed.interfaces.js";
 
-// SRP: Responsabilidade única - logging de seeds
 export class SeedLoggerService implements ISeedLogger {
   logStart(seedName: string): void {
     console.log(`🌱 Executando seed: ${seedName}...`);

@@ -7,8 +7,6 @@ import type {
 } from "../interfaces/auth.interfaces";
 import type { AuthResponse } from "../types/auth";
 
-// OCP: Extensível para novos métodos de autenticação
-// SRP: Responsabilidade única - autenticação por email
 export class EmailAuthStrategy implements IAuthenticationStrategy {
   constructor(
     private userRepository: IUserRepository,

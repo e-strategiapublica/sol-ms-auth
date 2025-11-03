@@ -8,8 +8,6 @@ import type {
 import type { AuthResponse } from "../types/auth";
 import { AuthenticationError } from "../services/user-validator.service";
 
-// OCP: Extensível para novos métodos de autenticação
-// SRP: Responsabilidade única - autenticação por senha
 export class PasswordAuthStrategy implements IAuthenticationStrategy {
   constructor(
     private userRepository: IUserRepository,

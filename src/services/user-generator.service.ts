@@ -1,7 +1,6 @@
 import type { IUserGenerator } from "../interfaces/seed.interfaces.js";
 import { generateSalt, hashPassword } from "../utils/crypto.js";
 
-// SRP: Responsabilidade única - geração de usuários de teste
 export class UserGeneratorService implements IUserGenerator {
   async generateTestUser(email: string, name: string, password: string): Promise<any> {
     const salt = generateSalt();

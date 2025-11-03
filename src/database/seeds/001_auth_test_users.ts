@@ -2,12 +2,7 @@ import type { ISeed, IUserGenerator, IDataCleaner, ISeedLogger, ISeedConfig } fr
 import { db } from "../../config/db.js";
 
 /**
- * Seed SOLID para criar usuário de teste para as rotas de autenticação
- * 
- * Aplica princípios SOLID:
- * - SRP: Responsabilidades separadas em serviços específicos
- * - DIP: Depende de abstrações (interfaces)
- * - ISP: Interfaces específicas e focadas
+ * Seed para criar usuário de teste para as rotas de autenticação
  */
 
 export class AuthTestUsersSeed implements ISeed {

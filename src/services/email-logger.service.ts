@@ -1,6 +1,5 @@
 import type { IEmailLogger, IEnvironmentDetector } from "../interfaces/email.interfaces";
 
-// SRP: Responsabilidade única - logs de email
 export class EmailLoggerService implements IEmailLogger {
   constructor(private environmentService: IEnvironmentDetector) {}
 

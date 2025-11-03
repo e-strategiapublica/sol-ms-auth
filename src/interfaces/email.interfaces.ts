@@ -1,4 +1,3 @@
-// ISP: Interfaces segregadas para email
 export interface IEmailTransporter {
   sendMail(options: any): Promise<any>;
 }

@@ -1,7 +1,6 @@
 import type { IDataCleaner } from "../interfaces/seed.interfaces.js";
 import { db } from "../config/db.js";
 
-// SRP: Responsabilidade única - limpeza de dados de teste
 export class DataCleanerService implements IDataCleaner {
   async cleanTestUsers(emails: string[]): Promise<void> {
     if (emails.length === 0) return;

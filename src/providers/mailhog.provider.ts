@@ -1,7 +1,6 @@
 import nodemailer from "nodemailer";
 import type { IEmailProvider, IEmailTransporter, EmailConfig } from "../interfaces/email.interfaces";
 
-// SRP: Responsabilidade única - provedor MailHog
 export class MailHogProvider implements IEmailProvider {
   createTransporter(): IEmailTransporter {
     const config: EmailConfig = {
