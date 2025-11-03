@@ -6,7 +6,7 @@ export async function up(db: Kysely<Database>): Promise<void> {
     .createTable("user")
     .ifNotExists()
     .addColumn("id", "serial", (col) => col.primaryKey())
-    .addColumn("email", "varchar", (col) => col.notNull())
+    .addColumn("email", "varchar", (col) => col.notNull().unique())
     .addColumn("email_verified", "boolean", (col) =>
       col.notNull().defaultTo(false)
     )

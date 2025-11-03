@@ -1,9 +1,14 @@
 import type { Request, Response } from "express";
 import userService from "../services/user.service.js";
-import type { NewUser } from "../types/database.js";
+import type { NewUser, UserUpdate } from "../types/database.js";
 import bcrypt from "bcryptjs";
 import typia from "typia";
-import type { ICreateUserRequest } from "../types/index.d.js";
+import type {
+  ICreateUserRequest,
+  IGetUsersQueryParams,
+  IUpdateUserRequest,
+} from "../types/index.d.js";
+import { cryptPassword } from "../utils/index.js";
 
 export const createUser = async (req: Request, res: Response) => {
   const validation = typia.validate<ICreateUserRequest>(req.body);
@@ -13,7 +18,7 @@ export const createUser = async (req: Request, res: Response) => {
       details: validation.errors,
     });
   }
-  const password_hash = await bcrypt.hash(validation.data.password, 10);
+  const password_hash = await cryptPassword(validation.data.password);
   const userData: NewUser = {
     email: validation.data.email,
     password_hash: password_hash,
@@ -26,17 +31,32 @@ export const createUser = async (req: Request, res: Response) => {
 export const getUserById = async (req: Request, res: Response) => {
   const id = Number(req.params.id);
   const user = await userService.getUserById(id);
-  res.status(200).json(user);
+  const statusCode = user ? 200 : 404;
+  res.status(statusCode).json(user);
 };
 
 export const getUsers = async (req: Request, res: Response) => {
-  const users = await userService.getUsers();
+  const queryParams: IGetUsersQueryParams = req.query;
+  const validation = typia.validate<IGetUsersQueryParams>(queryParams);
+  const filter = validation.success ? validation.data : {};
+  const users = await userService.getUsers(filter);
   res.status(200).json(users);
 };
 
 export const updateUser = async (req: Request, res: Response) => {
-  const userData = req.body;
   const id = Number(req.params.id);
+  const validation = typia.validate<IUpdateUserRequest>(req.body);
+  if (!validation.success) {
+    return res.status(400).json({
+      error: "Validation Error",
+      details: validation.errors,
+    });
+  }
+  const userData: UserUpdate & { password?: string } = { ...validation.data };
+  if (validation.data.password) {
+    userData.password_hash = await cryptPassword(validation.data.password);
+    delete userData.password;
+  }
   const updatedUser = await userService.updateUser(id, userData);
   res.status(200).json(updatedUser);
 };

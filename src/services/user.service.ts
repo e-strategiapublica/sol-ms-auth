@@ -1,5 +1,6 @@
 import * as userRepository from "../repositories/user.repository.js";
 import type { NewUser, UserUpdate } from "../types/database.js";
+import type { IGetUsersQueryParams } from "../types/index.js";
 
 const createUser = async (userData: NewUser) => {
   const newUser = await userRepository.create(userData);
@@ -11,8 +12,8 @@ const getUserById = async (id: number) => {
   return user;
 };
 
-const getUsers = async () => {
-  const users = await userRepository.findAll();
+const getUsers = async (filter: IGetUsersQueryParams) => {
+  const users = await userRepository.findAll(filter);
   return users;
 };
 
