@@ -1,53 +1,79 @@
+import type { ISeed, IUserGenerator, IDataCleaner, ISeedLogger, ISeedConfig } from "../../interfaces/seed.interfaces.js";
 import { db } from "../../config/db.js";
-import { generateSalt, hashPassword } from "../../utils/crypto.js";
 
 /**
- * Seed para criar usuário de teste para as rotas de autenticação
+ * Seed SOLID para criar usuário de teste para as rotas de autenticação
  * 
- * Usuário criado:
- * - test@example.com - Para testar todas as rotas de autenticação
+ * Aplica princípios SOLID:
+ * - SRP: Responsabilidades separadas em serviços específicos
+ * - DIP: Depende de abstrações (interfaces)
+ * - ISP: Interfaces específicas e focadas
  */
 
-export const seedAuthTestUsers = async () => {
-  console.log("🌱 Executando seed: Auth Test Users...");
+export class AuthTestUsersSeed implements ISeed {
+  public readonly name = "Auth Test Users";
 
-  try {
-    // Limpar usuário de teste existente
-    await db
-      .deleteFrom("user")
-      .where("email", "=", "test@example.com")
-      .execute();
+  constructor(
+    private userGenerator: IUserGenerator,
+    private dataCleaner: IDataCleaner,
+    private logger: ISeedLogger,
+    private config: ISeedConfig
+  ) {}
 
-    // Gerar hashes de senha
-    const testPassword = "123456";
-    const salt = generateSalt();
-    const passwordHash = hashPassword(testPassword, salt);
+  async execute(): Promise<void> {
+    this.logger.logStart(this.name);
 
-    // Usuário de teste único
-    const testUser = {
-      email: "test@example.com",
-      name: "Test User", 
-      password_hash: passwordHash,
-      password_salt: salt,
-      failed_login_attempts: 0,
-      is_blocked: false,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    };
+    try {
+      // Limpar dados existentes (SRP)
+      const emails = this.config.getTestEmails();
+      await this.dataCleaner.cleanTestUsers(emails);
 
-    // Inserir usuário
-    await db
-      .insertInto("user")
-      .values(testUser)
-      .execute();
+      // Gerar usuário de teste (SRP)
+      const email = emails[0];
+      if (!email) {
+        throw new Error("Email de teste não configurado");
+      }
+      
+      const testUser = await this.userGenerator.generateTestUser(
+        email,
+        "Test User",
+        this.config.getTestPassword()
+      );
 
-    console.log("✅ Usuário de teste criado:");
-    console.log("   👤 test@example.com - Para todas as rotas (senha: 123456)");
-    
-  } catch (error) {
-    console.error("❌ Erro ao executar seed:", error);
-    throw error;
+      // Inserir no banco
+      await db
+        .insertInto("user")
+        .values(testUser)
+        .execute();
+
+      this.logger.logSuccess(`Usuário de teste criado: ${emails[0]} (senha: ${this.config.getTestPassword()})`);
+      
+    } catch (error) {
+      this.logger.logError(error as Error);
+      throw error;
+    }
   }
+}
+
+// Factory para compatibilidade (DIP)
+export const createAuthTestUsersSeed = (): AuthTestUsersSeed => {
+  const { UserGeneratorService } = require("../../services/user-generator.service");
+  const { DataCleanerService } = require("../../services/data-cleaner.service");
+  const { SeedLoggerService } = require("../../services/seed-logger.service");
+  const { SeedConfig } = require("../../config/seed.config");
+
+  return new AuthTestUsersSeed(
+    new UserGeneratorService(),
+    new DataCleanerService(),
+    new SeedLoggerService(),
+    new SeedConfig()
+  );
+};
+
+// Função legacy para compatibilidade
+export const seedAuthTestUsers = async () => {
+  const seed = createAuthTestUsersSeed();
+  await seed.execute();
 };
 
 // Executar se chamado diretamente
