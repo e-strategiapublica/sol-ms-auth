@@ -19,24 +19,76 @@ Este é um microserviço responsável por gerenciar autenticação e autorizaç�
 
 ```
 src/
-├── app.ts                 # Configuração principal da aplicação
-├── server.ts             # Servidor Express
+├── app.ts                          # Configuração principal da aplicação
+├── server.ts                       # Servidor Express
+├── adapters/                       # Adaptadores para integração (DIP)
+│   └── user-repository.adapter.ts  # Adapter para repositório existente
 ├── config/
-│   └── jwt.ts            # Configurações do JWT
+│   ├── auth.config.ts              # Configurações de autenticação
+│   ├── db.ts                       # Configuração do banco de dados
+│   ├── jwt.ts                      # Configurações do JWT
+│   └── seed.config.ts              # Configurações de seeds
 ├── controllers/
-│   └── auth.controller.ts # Controladores de autenticação
+│   ├── auth.controller.ts          # Controladores de autenticação
+│   ├── test.controller.ts          # Controladores de teste (dev)
+│   └── user.controller.ts          # Controladores de usuário
+├── database/
+│   ├── migration.ts                # Script de migrações
+│   ├── seeder.ts                   # Orquestrador SOLID de seeds
+│   ├── migrations/                 # Migrações do banco
+│   │   ├── 0001_create_users.ts    # Criação da tabela users
+│   │   └── 0002_add_auth_fields.ts # Campos de autenticação
+│   └── seeds/                      # Seeds para dados de teste
+│       └── 001_auth_test_users.ts  # Usuários para testes de auth
+├── factories/                      # Factory pattern para DI
+│   └── auth.factory.ts             # Factory de dependências auth
+├── handlers/                       # Tratamento de erros (SRP)
+│   └── error.handler.ts            # Handler centralizado de erros
+├── interfaces/                     # Contratos/Interfaces (DIP)
+│   ├── auth.interfaces.ts          # Interfaces de autenticação
+│   ├── email.interfaces.ts         # Interfaces de email
+│   └── seed.interfaces.ts          # Interfaces de seeds
 ├── middlewares/
-│   └── auth.middleware.ts # Middlewares de autenticação
+│   ├── auth.middleware.ts          # Middlewares de autenticação
+│   └── validation.middleware.ts    # Middlewares de validação
 ├── models/
-│   └── user.model.ts     # Modelo de usuário
+│   └── user.model.ts               # Modelo de usuário
+├── providers/                      # Provedores de serviços
+│   ├── email.provider.ts           # Provedor de email
+│   └── mailhog.provider.ts         # Provedor MailHog (dev)
 ├── repositories/
-│   └── user.repository.ts # Repositório de usuários
+│   └── user.repository.ts          # Repositório de usuários
 ├── routes/
-│   ├── auth.routes.ts    # Rotas de autenticação
-│   └── user.routes.ts    # Rotas de usuário
-└── services/
-    ├── auth.service.ts   # Serviços de autenticação
-    └── user.service.ts   # Serviços de usuário
+│   ├── auth.routes.ts              # Rotas de autenticação
+│   ├── test.routes.ts              # Rotas de teste (dev)
+│   └── user.routes.ts              # Rotas de usuário
+├── services/                       # Lógica de negócio (SRP)
+│   ├── auth.service.ts             # Serviços de autenticação
+│   ├── crypto.service.ts           # Operações criptográficas
+│   ├── data-cleaner.service.ts     # Limpeza de dados (seeds)
+│   ├── email.service.ts            # Serviços de email
+│   ├── email-logger.service.ts     # Logger de emails
+│   ├── email-template.service.ts   # Templates de email
+│   ├── environment.service.ts      # Configurações de ambiente
+│   ├── seed-logger.service.ts      # Logger de seeds
+│   ├── seed-runner.service.ts      # Execução de seeds
+│   ├── token.service.ts            # Gerenciamento de tokens
+│   ├── user.service.ts             # Serviços de usuário
+│   ├── user-generator.service.ts   # Geração de usuários (seeds)
+│   └── user-validator.service.ts   # Validação de usuários
+├── strategies/                     # Strategy Pattern (OCP)
+│   ├── email-auth.strategy.ts      # Estratégia autenticação email
+│   └── password-auth.strategy.ts   # Estratégia autenticação senha
+├── tests/                          # Testes unitários
+│   └── index.spec.ts               # Testes principais
+├── types/                          # Definições de tipos TypeScript
+│   ├── auth.ts                     # Tipos de autenticação
+│   ├── database.ts                 # Tipos do banco de dados
+│   └── email.ts                    # Tipos de email
+└── utils/                          # Utilitários diversos
+    ├── crypto.ts                   # Funções criptográficas
+    ├── email.ts                    # Utilitários de email
+    └── validation.ts               # Utilitários de validação
 ```
 
 ## 🛠️ Pré-requisitos
@@ -101,14 +153,28 @@ docker run -p 3000:3000 --env-file .env --network sol-ms-auth_default sol-ms-aut
 
 ## 🚀 Scripts Disponíveis
 
+### **Desenvolvimento**
 - `npm run dev` - Executa a aplicação em modo de desenvolvimento
 - `npm run build` - Compila o TypeScript para JavaScript
 - `npm start` - Inicia a aplicação em produção
+
+### **Banco de Dados**
+- `npm run migrations:up` - Executa as migrações do banco de dados
+- `npm run seeds` - Popula o banco com dados de teste (arquitetura SOLID)
+
+### **Testes e Qualidade**
 - `npm test` - Executa os testes unitários com cobertura
 - `npm run test:watch` - Executa os testes em modo watch
 - `npm run lint` - Executa a verificação de estilo de código
 - `npm run lint:fix` - Corrige automaticamente os problemas de estilo
 - `npm run typecheck` - Verifica tipos sem gerar arquivos de build
+
+### **🌱 Seeds de Teste**
+O comando `npm run seeds` cria usuários de teste seguindo princípios SOLID:
+- **Email**: `test@example.com`
+- **Senha**: `123456`
+- **Funcionalidades**: Suporte a todas as rotas de autenticação
+- **Comandos**: Exibe comandos para Windows (PowerShell) e Linux/macOS (curl)
 
 ## 🔧 Configuração
 
@@ -137,15 +203,40 @@ O projeto utiliza PostgreSQL como banco de dados. A configuração do Docker Com
 - **Usuário**: changeme
 - **Senha**: changeme
 
+## 🏗️ Arquitetura SOLID
+
+Este projeto implementa rigorosamente os **princípios SOLID** para garantir código limpo, testável e extensível:
+
+- **SRP** (Single Responsibility): Cada classe tem uma responsabilidade única
+- **OCP** (Open/Closed): Extensível via Strategy Pattern para novos métodos de auth
+- **LSP** (Liskov Substitution): Implementações intercambiáveis via interfaces
+- **ISP** (Interface Segregation): Interfaces específicas e focadas
+- **DIP** (Dependency Inversion): Injeção de dependência via Factory Pattern
+
+📖 **Documentação completa**: Veja [SOLID_PRINCIPLES.md](./SOLID_PRINCIPLES.md) para detalhes da implementação.
+
 ## 📚 API Endpoints
 
-### Autenticação
+### **Autenticação**
+- `POST /method/email/send` - Envia código de autenticação por email
+- `POST /method/email` - Autentica com código recebido por email
+- `POST /method/pass` - Autentica com senha
 
-### Usuários
+### **Usuários**
+- `GET /users` - Lista usuários cadastrados
+
+### **Saúde da Aplicação**
+- `GET /health` - Verifica status da aplicação
+
+### **Testes (Desenvolvimento)**
+- `GET /test` - Informações sobre testes disponíveis
+- `GET /test/mailhog` - Testa integração com MailHog
 
 ## 🔒 Segurança
 
-- Autenticação baseada em JWT
-- Middleware de validação de token
-- Validação de entrada de dados
-- Criptografia de senhas
+- **Autenticação JWT** com claims específicas conforme spec IAM
+- **Hash de senhas** com bcrypt e salt
+- **Códigos temporários** com expiração para email
+- **Controle de tentativas** falhadas de login
+- **Middleware de validação** de entrada
+- **Headers Link** corretos nas respostas
