@@ -452,3 +452,7 @@ Content-Type: text/html; charset=utf-8
 ---
 
 **MailHog configurado com arquitetura SOLID - Pronto para desenvolvimento e produção!**
+
+---
+
+**Desenvolvido por AnthonySFarias**

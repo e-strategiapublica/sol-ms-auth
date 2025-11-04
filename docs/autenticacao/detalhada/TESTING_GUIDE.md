@@ -427,4 +427,7 @@ testTimeout: 10000
 - ✅ **Manutenção Centralizada**: Mudanças em um lugar
 - ✅ **Legibilidade**: Código mais limpo e claro
 
+---
+
+**Desenvolvido por AnthonySFarias**
 

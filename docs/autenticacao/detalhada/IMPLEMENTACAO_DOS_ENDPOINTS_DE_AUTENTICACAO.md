@@ -264,3 +264,7 @@ A implementação está **completa, segura e pronta para produção** com:
 - **Logging de segurança** para monitoramento
 - **Testes automatizados** via seeds
 - **Documentação completa** e atualizada
+
+---
+
+**Desenvolvido por AnthonySFarias**

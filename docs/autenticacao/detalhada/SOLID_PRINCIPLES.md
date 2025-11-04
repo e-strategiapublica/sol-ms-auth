@@ -343,3 +343,7 @@ A implementação SOLID permitiu criar um sistema de autenticação:
 - **Manutenível**: Com responsabilidades bem definidas
 - **Extensível**: Facilmente adaptável para novos requisitos
 - **Testável**: Com componentes isolados e mockáveis
+
+---
+
+**Desenvolvido por AnthonySFarias**

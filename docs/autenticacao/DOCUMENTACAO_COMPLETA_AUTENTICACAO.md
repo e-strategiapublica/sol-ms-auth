@@ -1,7 +1,7 @@
 # Documentação Completa - sol-ms-auth
 ## Microserviço de Autenticação com Arquitetura SOLID
 
-**Autores:** AnthonySFarias, LucasJordan  
+**Autores:** AnthonySFarias  
 **Versão:** 1.0.0  
 **Repositório:** https://github.com/e-strategiapublica/sol-ms-auth
 
@@ -532,4 +532,4 @@ O **sol-ms-auth** é um microserviço de autenticação robusto, seguro e manute
 
 ---
 
-**Desenvolvido por AnthonySFarias e LucasJordan**
+**Desenvolvido por AnthonySFarias**
