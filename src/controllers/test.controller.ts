@@ -77,7 +77,6 @@ class TestController {
   }
 }
 
-// Instância singleton
 const testController = new TestController();
 
 export default {

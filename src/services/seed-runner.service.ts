@@ -15,20 +15,18 @@ export class SeedRunnerService implements ISeedRunner {
   }
 
   async runAll(): Promise<void> {
-    console.log("🌱 Iniciando execução de seeds...\n");
+    console.log("🌱 Starting seeds execution...\n");
 
     try {
-      // Executar todos os seeds em sequência
       for (const seed of this.seeds) {
         await this.runSeed(seed);
       }
 
-      // Log final com resumo e comandos
       this.logger.logSeedSummary();
       this.logger.logTestCommands();
       
     } catch (error) {
-      console.error("💥 Erro durante execução dos seeds:", error);
+      console.error("💥 Error during seeds execution:", error);
       throw error;
     }
   }

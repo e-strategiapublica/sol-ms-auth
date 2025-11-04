@@ -1,10 +1,6 @@
 import type { ISeed, IUserGenerator, IDataCleaner, ISeedLogger, ISeedConfig } from "../../interfaces/seed.interfaces.js";
 import { db } from "../../config/db.js";
 
-/**
- * Seed para criar usuário de teste para as rotas de autenticação
- */
-
 export class AuthTestUsersSeed implements ISeed {
   public readonly name = "Auth Test Users";
 
@@ -19,14 +15,12 @@ export class AuthTestUsersSeed implements ISeed {
     this.logger.logStart(this.name);
 
     try {
-      // Limpar dados existentes (SRP)
       const emails = this.config.getTestEmails();
       await this.dataCleaner.cleanTestUsers(emails);
 
-      // Gerar usuário de teste (SRP)
       const email = emails[0];
       if (!email) {
-        throw new Error("Email de teste não configurado");
+        throw new Error("Test email not configured");
       }
       
       const testUser = await this.userGenerator.generateTestUser(
@@ -35,13 +29,12 @@ export class AuthTestUsersSeed implements ISeed {
         this.config.getTestPassword()
       );
 
-      // Inserir no banco
       await db
         .insertInto("user")
         .values(testUser)
         .execute();
 
-      this.logger.logSuccess(`Usuário de teste criado: ${emails[0]} (senha: ${this.config.getTestPassword()})`);
+      this.logger.logSuccess(`Test user created: ${emails[0]} (password: ${this.config.getTestPassword()})`);
       
     } catch (error) {
       this.logger.logError(error as Error);
@@ -50,7 +43,7 @@ export class AuthTestUsersSeed implements ISeed {
   }
 }
 
-// Factory para compatibilidade (DIP)
+// Factory for compatibility
 export const createAuthTestUsersSeed = (): AuthTestUsersSeed => {
   const { UserGeneratorService } = require("../../services/user-generator.service");
   const { DataCleanerService } = require("../../services/data-cleaner.service");
@@ -65,21 +58,19 @@ export const createAuthTestUsersSeed = (): AuthTestUsersSeed => {
   );
 };
 
-// Função legacy para compatibilidade
 export const seedAuthTestUsers = async () => {
   const seed = createAuthTestUsersSeed();
   await seed.execute();
 };
 
-// Executar se chamado diretamente
 if (require.main === module) {
   seedAuthTestUsers()
     .then(() => {
-      console.log("🎉 Seed executado com sucesso!");
+      console.log("🎉 Seed executed successfully!");
       process.exit(0);
     })
     .catch((error) => {
-      console.error("💥 Falha na execução do seed:", error);
+      console.error("💥 Seed execution failed:", error);
       process.exit(1);
     });
 }

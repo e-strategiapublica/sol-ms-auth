@@ -6,10 +6,8 @@ export class SmtpProvider implements IEmailProvider {
     const config: EmailConfig = {
       host: process.env.SMTP_HOST || "localhost",
       port: parseInt(process.env.SMTP_PORT || "587"),
-      secure: process.env.SMTP_PORT === "465", // true para porta 465, false para outras
+      secure: process.env.SMTP_PORT === "465",
     };
-
-    // Adiciona autenticação apenas se credenciais estiverem disponíveis
     if (process.env.SMTP_USER && process.env.SMTP_PASS) {
       config.auth = {
         user: process.env.SMTP_USER,

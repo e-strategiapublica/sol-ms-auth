@@ -6,8 +6,7 @@ export class MailHogProvider implements IEmailProvider {
     const config: EmailConfig = {
       host: "localhost",
       port: 1025,
-      secure: false, // MailHog não usa TLS
-      // Sem autenticação para MailHog
+      secure: false,
     };
 
     const transporter = nodemailer.createTransport(config);

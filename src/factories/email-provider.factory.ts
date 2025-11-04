@@ -2,7 +2,6 @@ import type { IEmailProvider, IEnvironmentDetector } from "../interfaces/email.i
 import { MailHogProvider } from "../providers/mailhog.provider";
 import { SmtpProvider } from "../providers/smtp.provider";
 
-// OCP + Factory Pattern: Extensível para novos provedores
 export class EmailProviderFactory {
   constructor(private environmentService: IEnvironmentDetector) {}
 
@@ -14,13 +13,11 @@ export class EmailProviderFactory {
     console.log(`📧 [DEBUG] isDevelopment: ${isDev}`);
     console.log(`📧 [DEBUG] hasSmtpCredentials: ${hasCredentials}`);
     
-    // Em desenvolvimento sem credenciais SMTP: usa MailHog
     if (isDev && !hasCredentials) {
       console.log("📧 [DEBUG] Using MailHogProvider");
       return new MailHogProvider();
     }
     
-    // Em outros casos: usa SMTP
     console.log("📧 [DEBUG] Using SmtpProvider");
     return new SmtpProvider();
   }

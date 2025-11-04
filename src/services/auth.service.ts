@@ -58,29 +58,25 @@ export class AuthService {
   }
 }
 
-// Factory para criar instância com dependências
 export const createAuthService = (): AuthService => {
-  // Imports das implementações concretas
   const { UserRepositoryAdapter } = require("../adapters/user-repository.adapter");
   const { EmailService } = require("./email.service");
   const { CryptoService } = require("./crypto.service");
+  const { UserValidatorService } = require("./user-validator.service");
   const { AuthConfig } = require("../config/auth.config");
-  const { UserValidator } = require("./user-validator.service");
   const { TokenService } = require("./token.service");
   const { TimingSafeService } = require("./timing-safe.service");
   const { EmailAuthStrategy } = require("../strategies/email-auth.strategy");
   const { PasswordAuthStrategy } = require("../strategies/password-auth.strategy");
 
-  // Criação das dependências
   const userRepository = new UserRepositoryAdapter();
   const emailService = new EmailService();
   const cryptoService = new CryptoService();
+  const userValidator = new UserValidatorService();
   const config = new AuthConfig();
-  const userValidator = new UserValidator(config);
   const tokenService = new TokenService();
   const timingSafeService = new TimingSafeService(cryptoService);
 
-  // Criação das estratégias
   const emailAuthStrategy = new EmailAuthStrategy(
     userRepository,
     tokenService,
@@ -108,10 +104,7 @@ export const createAuthService = (): AuthService => {
   );
 };
 
-// Instância singleton para compatibilidade com código existente
 const authService = createAuthService();
-
-// Exportações para compatibilidade
 export { AuthenticationError, UserNotFoundError };
 export default {
   authenticateWithEmail: authService.authenticateWithEmail.bind(authService),
