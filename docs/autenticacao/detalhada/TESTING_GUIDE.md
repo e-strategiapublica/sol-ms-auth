@@ -386,7 +386,7 @@ testTimeout: 10000
 - [Jest Documentation](https://jestjs.io/)
 - [Supertest GitHub](https://github.com/visionmedia/supertest)
 - [SOLID Principles](./SOLID_PRINCIPLES.md)
-- [README de Testes](./src/tests/README.md)
+- [README de Testes](../../../src/tests/README.md)
 
 ## Estatísticas Finais
 

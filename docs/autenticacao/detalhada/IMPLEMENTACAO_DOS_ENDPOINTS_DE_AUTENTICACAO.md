@@ -33,6 +33,7 @@ Foram implementados os três endpoints de autenticação conforme especificaçã
 
 1. **Interfaces** (`src/interfaces/`)
    - `auth.interfaces.ts` - Contratos para autenticação (DIP)
+   - `email.interfaces.ts` - Contratos de email (ISP)
    - `seed.interfaces.ts` - Contratos para seeds (DIP)
 
 2. **Tipos** (`src/types/`)
@@ -43,6 +44,7 @@ Foram implementados os três endpoints de autenticação conforme especificaçã
    - `jwt.ts` - Geração e validação de tokens JWT conforme spec IAM
    - `auth.config.ts` - Configurações de autenticação (ISP)
    - `seed.config.ts` - Configurações de seeds (ISP)
+   - `db.ts` - Configuração do banco de dados
 
 4. **Utilitários** (`src/utils/`)
    - `crypto.ts` - Criptografia de senhas e geração de códigos
@@ -52,7 +54,17 @@ Foram implementados os três endpoints de autenticação conforme especificaçã
    - `user.repository.ts` - Expandido com operações de autenticação
    - `user-repository.adapter.ts` - Adapter para repositório existente (DIP)
 
-6. **Serviços** (`src/services/`) - **Seguindo SRP**
+6. **Models** (`src/models/`)
+   - `user.model.ts` - Model de usuário
+
+7. **Providers** (`src/providers/`) - **OCP**
+   - `mailhog.provider.ts` - Provider MailHog para desenvolvimento
+   - `smtp.provider.ts` - Provider SMTP para produção
+
+8. **Factories** (`src/factories/`) - **OCP + DIP**
+   - `auth.factory.ts` - Factory para injeção de dependências
+
+9. **Serviços** (`src/services/`) - **Seguindo SRP**
    - `auth.service.ts` - Orquestrador principal de autenticação
    - `security-logger.service.ts` - Logging de eventos de segurança
    - `timing-safe.service.ts` - Proteção contra timing attacks
@@ -61,36 +73,55 @@ Foram implementados os três endpoints de autenticação conforme especificaçã
    - `crypto.service.ts` - Operações criptográficas
    - `token.service.ts` - Gerenciamento de tokens JWT
    - `email.service.ts` - Envio de emails
+   - `seed-logger.service.ts` - Logging de seeds
+   - `seed-runner.service.ts` - Execução de seeds
+   - `user-generator.service.ts` - Geração de usuários
+   - `data-cleaner.service.ts` - Limpeza de dados
 
-7. **Strategies** (`src/strategies/`) - **Strategy Pattern (OCP)**
-   - `email-auth.strategy.ts` - Estratégia de autenticação por email
-   - `password-auth.strategy.ts` - Estratégia de autenticação por senha
+10. **Strategies** (`src/strategies/`) - **Strategy Pattern (OCP)**
+    - `email-auth.strategy.ts` - Estratégia de autenticação por email
+    - `password-auth.strategy.ts` - Estratégia de autenticação por senha
 
-8. **Controllers** (`src/controllers/`)
-   - `auth.controller.ts` - Handlers dos endpoints de autenticação (SRP)
+11. **Controllers** (`src/controllers/`)
+    - `auth.controller.ts` - Handlers dos endpoints de autenticação (SRP)
+    - `test.controller.ts` - Handlers dos endpoints de teste (SRP)
+    - `user.controller.ts` - Handlers dos endpoints de usuários (SRP)
 
-9. **Middlewares** (`src/middlewares/`) - **Seguindo SRP**
-   - `typia-validation.middleware.ts` - Validação Typia com type safety
-   - `enhanced-validation.middleware.ts` - Validação e sanitização avançada (legacy)
-   - `rate-limit.middleware.ts` - Rate limiting por IP e email
-   - `validation.middleware.ts` - Validação básica (legacy)
+12. **Middlewares** (`src/middlewares/`) - **Seguindo SRP**
+    - `typia-validation.middleware.ts` - Validação Typia com type safety
+    - `enhanced-validation.middleware.ts` - Validação e sanitização avançada (legacy)
+    - `rate-limit.middleware.ts` - Rate limiting por IP e email
+    - `validation.middleware.ts` - Validação básica (legacy)
 
-10. **Handlers** (`src/handlers/`)
+13. **Handlers** (`src/handlers/`)
     - `error.handler.ts` - Tratamento centralizado de erros (SRP)
 
-11. **Rotas** (`src/routes/`)
-    - `auth.routes.ts` - Definição dos endpoints com middlewares de segurança
+14. **Rotas** (`src/routes/`)
+    - `auth.routes.ts` - Definição dos endpoints de autenticação com middlewares
+    - `test.routes.ts` - Definição dos endpoints de teste
+    - `user.routes.ts` - Definição dos endpoints de usuários
 
-12. **Database** (`src/database/`)
+15. **Database** (`src/database/`)
     - `seeder.ts` - Orquestrador SOLID de seeds
+    - `migration.ts` - Sistema de migrations
+    - `migrations/` - Arquivos de migration
     - `seeds/001_auth_test_users.ts` - Seeds para usuários de teste
+
+16. **Testes** (`src/tests/`)
+    - `constants/test-constants.ts` - Constantes reutilizáveis
+    - `helpers/mock-factory.ts` - Factory de mocks
+    - `helpers/test-data-factory.ts` - Factory de dados de teste
+    - `strategies/` - Testes unitários das estratégias (100% cobertura)
+    - `routes/` - Testes de rotas
 
 ## Próximos Passos Necessários
 
-### 1. **Instalar Dependências Adicionais**
+### 1. **Instalar Dependências**
 ```bash
-npm install nodemailer @types/nodemailer
+npm install
 ```
+
+> **Nota:** Todas as dependências necessárias (nodemailer, @types/nodemailer, etc.) já estão incluídas no `package.json`.
 
 ### 2. **Executar Migration**
 ```bash
@@ -213,9 +244,9 @@ Invoke-RestMethod -Uri "http://localhost:3000/method/pass" -Method POST -Body '{
 ### **Logs de Segurança**
 ```bash
 # Exemplos de logs que aparecerão no console:
-[SECURITY] 2025-11-03T15:30:45.123Z Failed auth attempt from 192.168.1.100 for t***t@example.com: Invalid credentials
-[SECURITY] 2025-11-03T15:30:50.456Z Rate limit exceeded from 192.168.1.100 on /method/pass
-[SECURITY] 2025-11-03T15:31:00.789Z Suspicious activity from 192.168.1.100: Unexpected auth error
+[SECURITY] <timestamp> Failed auth attempt from 192.168.1.100 for t***t@example.com: Invalid credentials
+[SECURITY] <timestamp> Rate limit exceeded from 192.168.1.100 on /method/pass
+[SECURITY] <timestamp> Suspicious activity from 192.168.1.100: Unexpected auth error
 ```
 
 ### **MailHog Interface**

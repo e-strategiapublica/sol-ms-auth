@@ -6,14 +6,19 @@ MailHog é uma ferramenta para capturar e visualizar emails enviados durante o d
 
 ## Arquitetura SOLID Implementada
 
-O sistema agora usa **arquitetura SOLID** com:
-- **EmailService**: Coordenação principal com injeção de dependência
-- **MailHogProvider**: Configuração específica do MailHog (SRP)
+O sistema usa **arquitetura SOLID** para gerenciamento de emails:
+
+### **Componentes Principais:**
+- **EmailService**: Coordenação principal com injeção de dependência (SRP)
+- **MailHogProvider**: Configuração específica do MailHog para desenvolvimento (SRP)
 - **SmtpProvider**: Configuração SMTP para produção (SRP)
-- **EmailProviderFactory**: Seleção automática do provedor (Factory Pattern + OCP)
-- **EmailTemplateService**: Criação de templates de email (SRP)
-- **EmailLoggerService**: Logs específicos por ambiente (SRP)
-- **EnvironmentService**: Detecção de ambiente (SRP)
+- **Factory Pattern**: Seleção automática do provedor baseada no ambiente (OCP)
+
+### **Responsabilidades Separadas:**
+- Envio de emails (EmailService)
+- Configuração por ambiente (Providers)
+- Detecção de ambiente (via variáveis de ambiente)
+- Logging específico por ambiente
 
 ## Configuração
 
@@ -197,7 +202,7 @@ curl -X POST http://localhost:3000/method/email \
 **PowerShell (Windows):**
 ```powershell
 # 1. Iniciar servidor
-yarn run dev
+npm run dev
 
 # 2. Solicitar código
 Invoke-RestMethod -Uri "http://localhost:3000/method/email/send" -Method POST -ContentType "application/json" -Body '{"identifier": "teste@example.com"}'
@@ -211,7 +216,7 @@ Invoke-RestMethod -Uri "http://localhost:3000/method/email" -Method POST -Conten
 **Linux/macOS (bash):**
 ```bash
 # 1. Iniciar servidor
-yarn run dev
+npm run dev
 
 # 2. Solicitar código
 curl -X POST http://localhost:3000/method/email/send \
@@ -357,16 +362,16 @@ echo "NODE_ENV=development" > .env
 ```powershell
 # Limpar cache e reinstalar
 Remove-Item -Recurse -Force node_modules\.cache -ErrorAction SilentlyContinue
-yarn install
-yarn run dev
+npm install
+npm run dev
 ```
 
 **Linux/macOS (bash):**
 ```bash
 # Limpar cache e reinstalar
 rm -rf node_modules/.cache
-yarn install
-yarn run dev
+npm install
+npm run dev
 ```
 
 ## Configurações Avançadas

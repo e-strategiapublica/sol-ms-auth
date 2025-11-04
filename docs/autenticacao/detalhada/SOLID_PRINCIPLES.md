@@ -134,10 +134,47 @@ export const createAuthService = (): AuthService => {
 
 ```
 src/
+├── adapters/
+│   └── user-repository.adapter.ts  # DIP - Adapter para repo existente
+├── config/
+│   ├── auth.config.ts              # ISP - Configurações de auth
+│   ├── db.ts                       # Configuração do banco
+│   ├── jwt.ts                      # Configuração JWT
+│   └── seed.config.ts              # ISP - Configurações de seeds
+├── controllers/
+│   ├── auth.controller.ts          # SRP - Coordenação HTTP auth
+│   ├── test.controller.ts          # SRP - Endpoints de teste
+│   └── user.controller.ts          # SRP - Coordenação HTTP users
+├── database/
+│   ├── seeder.ts                   # Orquestrador SOLID de seeds
+│   ├── migration.ts                # Sistema de migrations
+│   ├── migrations/                 # Arquivos de migration
+│   └── seeds/
+│       └── 001_auth_test_users.ts  # Seed SOLID para usuários
+├── factories/
+│   └── auth.factory.ts             # Factory para injeção de dependências
+├── handlers/
+│   └── error.handler.ts            # SRP - Tratamento de erros
 ├── interfaces/
 │   ├── auth.interfaces.ts          # Contratos de autenticação (DIP)
 │   ├── email.interfaces.ts         # Contratos de email (ISP)
 │   └── seed.interfaces.ts          # Contratos de seeds (DIP)
+├── middlewares/
+│   ├── enhanced-validation.middleware.ts # SRP - Validação avançada
+│   ├── rate-limit.middleware.ts    # SRP - Rate limiting
+│   ├── typia-validation.middleware.ts # SRP - Validação Typia
+│   └── validation.middleware.ts    # SRP - Validação básica (legacy)
+├── models/
+│   └── user.model.ts               # Model de usuário
+├── providers/
+│   ├── mailhog.provider.ts         # Provider MailHog (dev)
+│   └── smtp.provider.ts            # Provider SMTP (prod)
+├── repositories/
+│   └── user.repository.ts          # Repositório de usuários
+├── routes/
+│   ├── auth.routes.ts              # Rotas de autenticação
+│   ├── test.routes.ts              # Rotas de teste
+│   └── user.routes.ts              # Rotas de usuários
 ├── services/
 │   ├── auth.service.ts             # Orquestrador principal
 │   ├── token.service.ts            # SRP - Tokens
@@ -154,23 +191,26 @@ src/
 ├── strategies/
 │   ├── email-auth.strategy.ts      # OCP - Estratégia email
 │   └── password-auth.strategy.ts   # OCP - Estratégia senha
-├── adapters/
-│   └── user-repository.adapter.ts  # DIP - Adapter para repo existente
-├── handlers/
-│   └── error.handler.ts            # SRP - Tratamento de erros
-├── middlewares/
-│   ├── enhanced-validation.middleware.ts # SRP - Validação avançada
-│   ├── rate-limit.middleware.ts    # SRP - Rate limiting
-│   └── validation.middleware.ts    # SRP - Validação básica (legacy)
-├── config/
-│   ├── auth.config.ts              # ISP - Configurações de auth
-│   └── seed.config.ts              # ISP - Configurações de seeds
-├── database/
-│   ├── seeder.ts                   # Orquestrador SOLID de seeds
-│   └── seeds/
-│       └── 001_auth_test_users.ts  # Seed SOLID para usuários
-└── controllers/
-    └── auth.controller.ts          # SRP - Coordenação HTTP
+├── tests/
+│   ├── constants/
+│   │   └── test-constants.ts       # Constantes de teste
+│   ├── helpers/
+│   │   ├── mock-factory.ts         # Factory de mocks
+│   │   └── test-data-factory.ts    # Factory de dados de teste
+│   ├── strategies/
+│   │   ├── email-auth.strategy.test.ts     # Testes email auth
+│   │   └── password-auth.strategy.test.ts  # Testes password auth
+│   ├── routes/
+│   │   ├── auth.routes.simple.test.ts      # Testes simplificados
+│   │   └── auth.routes.test.ts.skip        # Testes integração (skip)
+│   ├── setup.ts                    # Setup dos testes
+│   └── index.spec.ts               # Teste básico
+├── types/
+│   ├── auth.ts                     # Tipos de autenticação
+│   └── database.ts                 # Tipos do banco
+└── utils/
+    ├── crypto.ts                   # Utilitários de criptografia
+    └── email.ts                    # Utilitários de email
 ```
 
 ## Segurança SOLID
