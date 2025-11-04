@@ -426,7 +426,7 @@ Subject: Código de Autenticação
 Content-Type: text/html; charset=utf-8
 ```
 
-## 🚀 Próximos Passos
+## Próximos Passos
 
 ### **Extensibilidade (OCP)**
 - Adicionar **SendGridProvider**
