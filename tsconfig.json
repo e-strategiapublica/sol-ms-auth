@@ -40,6 +40,13 @@
     "moduleDetection": "force",
     "skipLibCheck": true,
     "moduleResolution": "Node",
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    
+    // Typia Configuration
+    "plugins": [
+      {
+        "transform": "typia/lib/transform"
+      }
+    ]
   },
 }

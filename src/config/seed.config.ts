@@ -2,7 +2,7 @@ import type { ISeedConfig } from "../interfaces/seed.interfaces.js";
 
 export class SeedConfig implements ISeedConfig {
   getTestPassword(): string {
-    return process.env.TEST_PASSWORD || "123456";
+    return process.env.TEST_PASSWORD || "Password123";
   }
 
   getTestEmails(): string[] {

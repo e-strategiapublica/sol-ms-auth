@@ -1,13 +1,14 @@
 import type { Request, Response } from "express";
-import authService from "../services/auth.service";
-import type { AuthRequest, EmailSendRequest, EmailAuthParams, PasswordAuthParams } from "../types/auth";
+import { createAuthService } from "../services/auth.service";
 import { ErrorHandler } from "../handlers/error.handler";
+
+const authService = createAuthService();
 
 class AuthController {
   async authenticateWithEmail(req: Request, res: Response): Promise<void> {
     try {
-      const { identifier, params }: AuthRequest = req.body;
-      const { code } = params as EmailAuthParams;
+      const { identifier, params } = req.body;
+      const { code } = params;
 
       const existingToken = req.headers.authorization?.replace("Bearer ", "");
       const result = await authService.authenticateWithEmail(identifier, code, existingToken);
@@ -21,7 +22,7 @@ class AuthController {
 
   async sendEmailCode(req: Request, res: Response): Promise<void> {
     try {
-      const { identifier }: EmailSendRequest = req.body;
+      const { identifier } = req.body;
 
       await authService.sendEmailAuthCode(identifier);
 
@@ -35,8 +36,8 @@ class AuthController {
 
   async authenticateWithPassword(req: Request, res: Response): Promise<void> {
     try {
-      const { identifier, params }: AuthRequest = req.body;
-      const { password } = params as PasswordAuthParams;
+      const { identifier, params } = req.body;
+      const { password } = params;
 
       const existingToken = req.headers.authorization?.replace("Bearer ", "");
       const result = await authService.authenticateWithPassword(identifier, password, existingToken);

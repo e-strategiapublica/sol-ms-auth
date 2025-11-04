@@ -62,7 +62,7 @@ export const createAuthService = (): AuthService => {
   const { UserRepositoryAdapter } = require("../adapters/user-repository.adapter");
   const { EmailService } = require("./email.service");
   const { CryptoService } = require("./crypto.service");
-  const { UserValidatorService } = require("./user-validator.service");
+  const { UserValidator } = require("./user-validator.service");
   const { AuthConfig } = require("../config/auth.config");
   const { TokenService } = require("./token.service");
   const { TimingSafeService } = require("./timing-safe.service");
@@ -72,8 +72,8 @@ export const createAuthService = (): AuthService => {
   const userRepository = new UserRepositoryAdapter();
   const emailService = new EmailService();
   const cryptoService = new CryptoService();
-  const userValidator = new UserValidatorService();
   const config = new AuthConfig();
+  const userValidator = new UserValidator(config);
   const tokenService = new TokenService();
   const timingSafeService = new TimingSafeService(cryptoService);
 

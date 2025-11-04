@@ -35,11 +35,11 @@ export class SeedLoggerService implements ISeedLogger {
     
     console.log("\n🔐 PASSWORD authentication:");
     console.log("🪟 PowerShell/Windows:");
-    console.log('Invoke-RestMethod -Uri "http://localhost:3000/method/pass" -Method POST -Body \'{"identifier":"test@example.com","params":{"password":"123456"}}\' -ContentType "application/json"');
+    console.log('Invoke-RestMethod -Uri "http://localhost:3000/method/pass" -Method POST -Body \'{"identifier":"test@example.com","params":{"password":"Password123"}}\' -ContentType "application/json"');
     console.log("🐧 Linux/macOS (curl):");
     console.log('curl -X POST http://localhost:3000/method/pass \\');
     console.log('  -H "Content-Type: application/json" \\');
-    console.log('  -d \'{"identifier":"test@example.com","params":{"password":"123456"}}\'');
+    console.log('  -d \'{"identifier":"test@example.com","params":{"password":"Password123"}}\'');
     
     console.log("\n💡 Tip: After running the first command, check MailHog at http://localhost:8025 to see the sent code!");
   }
@@ -50,7 +50,7 @@ export class SeedLoggerService implements ISeedLogger {
     console.log("┌─────────────────────┬──────────────────────┬─────────────────────┐");
     console.log("│ Email               │ Available Methods    │ Password            │");
     console.log("├─────────────────────┼──────────────────────┼─────────────────────┤");
-    console.log("│ test@example.com    │ All routes           │ 123456              │");
+    console.log("│ test@example.com    │ All routes           │ Password123         │");
     console.log("└─────────────────────┴──────────────────────┴─────────────────────┘");
   }
 }

@@ -21,7 +21,7 @@ Foram implementados os três endpoints de autenticação conforme especificaçã
 
 ### POST /method/pass
 - **Funcionalidade**: Autenticação via senha
-- **Validação**: Email sanitizado e senha validada (6-128 caracteres)
+- **Validação**: Email sanitizado e senha validada (8-128 caracteres, complexidade obrigatória)
 - **Segurança**: Rate limiting (3 tentativas/10min), timing attack protection
 - **Resposta de Sucesso**: 200 OK com token JWT
 - **Resposta de Erro**: 401 Unauthorized (mensagem genérica para evitar user enumeration)
@@ -70,7 +70,8 @@ Foram implementados os três endpoints de autenticação conforme especificaçã
    - `auth.controller.ts` - Handlers dos endpoints de autenticação (SRP)
 
 9. **Middlewares** (`src/middlewares/`) - **Seguindo SRP**
-   - `enhanced-validation.middleware.ts` - Validação e sanitização avançada
+   - `typia-validation.middleware.ts` - Validação Typia com type safety
+   - `enhanced-validation.middleware.ts` - Validação e sanitização avançada (legacy)
    - `rate-limit.middleware.ts` - Rate limiting por IP e email
    - `validation.middleware.ts` - Validação básica (legacy)
 
@@ -110,13 +111,15 @@ npm run seeds
 
 Isso criará um usuário de teste:
 - **Email**: `test@example.com`
-- **Senha**: `123456`
+- **Senha**: `Password123`
 - **Funcionalidades**: Suporte a todas as rotas de autenticação
 
 ## Funcionalidades de Segurança Implementadas
 
 ### **Segurança Avançada:**
 - **Hash de senhas** com bcrypt e salt configurável
+- **Complexidade de senha** obrigatória (8+ chars, maiúscula, minúscula, número)
+- **Validação Typia** com type safety em compile-time e runtime
 - **Códigos de email** com expiração (300s padrão)
 - **Account lockout progressivo**: 5min → 15min → 1h → 6h → 24h
 - **Rate limiting** por IP e email com diferentes limites
@@ -178,7 +181,7 @@ curl -X POST http://localhost:3000/method/email/send \
   -H "Content-Type: application/json" \
   -d '{"identifier": "test@example.com"}'
 
-# Windows PowerShell  
+# Windows PowerShell
 Invoke-RestMethod -Uri "http://localhost:3000/method/email/send" -Method POST -Body '{"identifier":"test@example.com"}' -ContentType "application/json"
 ```
 
@@ -199,10 +202,10 @@ Invoke-RestMethod -Uri "http://localhost:3000/method/email" -Method POST -Body '
 # Linux/macOS
 curl -X POST http://localhost:3000/method/pass \
   -H "Content-Type: application/json" \
-  -d '{"identifier": "test@example.com", "params": {"password": "123456"}}'
+  -d '{"identifier": "test@example.com", "params": {"password": "Password123"}}'
 
 # Windows PowerShell
-Invoke-RestMethod -Uri "http://localhost:3000/method/pass" -Method POST -Body '{"identifier":"test@example.com","params":{"password":"123456"}}' -ContentType "application/json"
+Invoke-RestMethod -Uri "http://localhost:3000/method/pass" -Method POST -Body '{"identifier":"test@example.com","params":{"password":"Password123"}}' -ContentType "application/json"
 ```
 
 ## Monitoramento de Segurança
