@@ -45,3 +45,9 @@ export interface IAuthConfig {
   getMaxLoginAttempts(): number;
   getEmailCodeExpiration(): number;
 }
+
+// Interface para proteção contra timing attacks (SRP)
+export interface ITimingSafeService {
+  safeComparePassword(password: string, userHash: string | null, userExists: boolean): Promise<boolean>;
+  safeCompareEmailCode(inputCode: string, storedCode: string | null, userExists: boolean): Promise<boolean>;
+}

@@ -67,6 +67,7 @@ export const createAuthService = (): AuthService => {
   const { AuthConfig } = require("../config/auth.config");
   const { UserValidator } = require("./user-validator.service");
   const { TokenService } = require("./token.service");
+  const { TimingSafeService } = require("./timing-safe.service");
   const { EmailAuthStrategy } = require("../strategies/email-auth.strategy");
   const { PasswordAuthStrategy } = require("../strategies/password-auth.strategy");
 
@@ -77,20 +78,23 @@ export const createAuthService = (): AuthService => {
   const config = new AuthConfig();
   const userValidator = new UserValidator(config);
   const tokenService = new TokenService();
+  const timingSafeService = new TimingSafeService(cryptoService);
 
   // Criação das estratégias
   const emailAuthStrategy = new EmailAuthStrategy(
     userRepository,
     tokenService,
     cryptoService,
-    userValidator
+    userValidator,
+    timingSafeService
   );
 
   const passwordAuthStrategy = new PasswordAuthStrategy(
     userRepository,
     tokenService,
     cryptoService,
-    userValidator
+    userValidator,
+    timingSafeService
   );
 
   return new AuthService(

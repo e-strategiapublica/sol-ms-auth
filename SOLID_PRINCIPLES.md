@@ -144,6 +144,9 @@ src/
 │   ├── crypto.service.ts           # SRP - Criptografia
 │   ├── email.service.ts            # SRP - Email
 │   ├── user-validator.service.ts   # SRP - Validação
+│   ├── security-logger.service.ts  # SRP - Security logging
+│   ├── timing-safe.service.ts      # SRP - Timing attack protection
+│   ├── account-lockout.service.ts  # SRP - Account lockout
 │   ├── seed-logger.service.ts      # SRP - Logging de seeds
 │   ├── seed-runner.service.ts      # SRP - Execução de seeds
 │   ├── user-generator.service.ts   # SRP - Geração de usuários
@@ -155,6 +158,10 @@ src/
 │   └── user-repository.adapter.ts  # DIP - Adapter para repo existente
 ├── handlers/
 │   └── error.handler.ts            # SRP - Tratamento de erros
+├── middlewares/
+│   ├── enhanced-validation.middleware.ts # SRP - Validação avançada
+│   ├── rate-limit.middleware.ts    # SRP - Rate limiting
+│   └── validation.middleware.ts    # SRP - Validação básica (legacy)
 ├── config/
 │   ├── auth.config.ts              # ISP - Configurações de auth
 │   └── seed.config.ts              # ISP - Configurações de seeds
@@ -165,6 +172,51 @@ src/
 └── controllers/
     └── auth.controller.ts          # SRP - Coordenação HTTP
 ```
+
+## Segurança SOLID
+
+### **Implementação de Segurança com Arquitetura SOLID**
+
+O sistema de segurança implementado segue rigorosamente os princípios SOLID:
+
+#### **Single Responsibility Principle (SRP)**
+- **`SecurityLoggerService`**: Responsável apenas por logging de eventos de segurança
+- **`TimingSafeService`**: Responsável apenas por proteção contra timing attacks
+- **`AccountLockoutService`**: Responsável apenas por cálculo de lockout progressivo
+- **`InputSanitizerService`**: Responsável apenas por sanitização de entrada
+- **`RateLimitMiddleware`**: Responsável apenas por rate limiting
+- **`ErrorHandler`**: Responsável apenas por tratamento padronizado de erros
+
+#### **Open/Closed Principle (OCP)**
+- **Strategy Pattern**: `EmailAuthStrategy` e `PasswordAuthStrategy` extensíveis
+- **Middleware Pipeline**: Novos middlewares podem ser adicionados sem modificar existentes
+- **Rate Limiting**: Diferentes implementações de `IRateLimitService` podem ser usadas
+- **Security Logging**: Novos tipos de logs podem ser adicionados facilmente
+
+#### **Liskov Substitution Principle (LSP)**
+- Qualquer implementação de `ITimingSafeService` pode ser substituída
+- Implementações de `IRateLimitService` são intercambiáveis
+- Strategies de autenticação seguem o mesmo contrato `IAuthenticationStrategy`
+
+#### **Interface Segregation Principle (ISP)**
+- **`ITimingSafeService`**: Interface específica para timing attacks
+- **`IRateLimitService`**: Interface específica para rate limiting
+- **`ISecurityLogger`**: Interface específica para security logging
+- **`IInputSanitizer`**: Interface específica para sanitização
+- **`IAccountLockoutService`**: Interface específica para account lockout
+
+#### **Dependency Inversion Principle (DIP)**
+- Strategies dependem de abstrações (`ITimingSafeService`, `IUserValidator`)
+- Middlewares dependem de interfaces (`IRateLimitService`, `ISecurityLogger`)
+- Error handlers dependem de abstrações para logging
+- Factory pattern para injeção de todas as dependências
+
+### **Benefícios da Segurança SOLID**
+- **Testabilidade**: Cada componente pode ser testado isoladamente com mocks
+- **Manutenibilidade**: Responsabilidades claras facilitam manutenção
+- **Extensibilidade**: Novos tipos de proteção facilmente adicionáveis
+- **Configurabilidade**: Diferentes implementações para diferentes ambientes
+- **Auditabilidade**: Logging centralizado e padronizado
 
 ## Seeds SOLID
 
@@ -214,3 +266,40 @@ A refatoração mantém **100% de compatibilidade** com o código existente atra
 - Binding de métodos para manter contexto
 
 **O código existente continua funcionando sem modificações!**
+
+## Melhorias de Segurança Implementadas
+
+### **🛡️ Proteções Contra Ataques Implementadas**
+
+| Vulnerabilidade | Solução SOLID | Princípio Aplicado |
+|----------------|---------------|-------------------|
+| **User Enumeration** | `ErrorHandler` com mensagens genéricas | SRP - Tratamento centralizado |
+| **Timing Attacks** | `TimingSafeService` com comparações constantes | SRP - Responsabilidade única |
+| **Brute Force** | `RateLimitMiddleware` + `AccountLockoutService` | SRP - Serviços especializados |
+| **Input Injection** | `InputSanitizerService` com validação rigorosa | SRP - Sanitização dedicada |
+| **Information Disclosure** | `SecurityLoggerService` com mascaramento | SRP - Logging seguro |
+
+### **📊 Métricas de Segurança**
+
+- **Rate Limiting**: 3 tentativas por 10 minutos (auth) / 5 minutos (email)
+- **Account Lockout**: Progressivo de 5 minutos até 24 horas
+- **Timing Protection**: Comparações sempre em tempo constante
+- **Input Validation**: 100% dos inputs sanitizados
+- **Security Logging**: Todos os eventos auditados com mascaramento
+
+### **🏗️ Benefícios da Arquitetura SOLID na Segurança**
+
+1. **Testabilidade**: Cada componente de segurança pode ser testado isoladamente
+2. **Manutenibilidade**: Fácil identificação e correção de vulnerabilidades
+3. **Extensibilidade**: Novos tipos de proteção facilmente adicionáveis
+4. **Configurabilidade**: Diferentes níveis de segurança por ambiente
+5. **Auditabilidade**: Logs centralizados e padronizados
+
+### **🎯 Resultado Final**
+
+A implementação SOLID permitiu criar um sistema de autenticação:
+- ✅ **Seguro**: Protegido contra ataques comuns
+- ✅ **Robusto**: Com múltiplas camadas de proteção
+- ✅ **Manutenível**: Com responsabilidades bem definidas
+- ✅ **Extensível**: Facilmente adaptável para novos requisitos
+- ✅ **Testável**: Com componentes isolados e mockáveis

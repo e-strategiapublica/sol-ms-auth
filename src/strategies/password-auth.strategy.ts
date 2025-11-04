@@ -3,34 +3,55 @@ import type {
   IUserRepository, 
   ITokenService, 
   ICryptoService, 
-  IUserValidator 
+  IUserValidator,
+  ITimingSafeService
 } from "../interfaces/auth.interfaces";
 import type { AuthResponse } from "../types/auth";
-import { AuthenticationError } from "../services/user-validator.service";
+import { AuthenticationError, UserNotFoundError } from "../services/user-validator.service";
 
 export class PasswordAuthStrategy implements IAuthenticationStrategy {
   constructor(
     private userRepository: IUserRepository,
     private tokenService: ITokenService,
     private cryptoService: ICryptoService,
-    private userValidator: IUserValidator
+    private userValidator: IUserValidator,
+    private timingSafeService: ITimingSafeService
   ) {}
 
   async authenticate(identifier: string, params: any, existingToken?: string): Promise<AuthResponse> {
     const { password } = params;
     const user = await this.userRepository.findByEmail(identifier);
-    
-    this.userValidator.validateUserAccess(user);
-    this.userValidator.validatePassword(user);
-    this.userValidator.validatePasswordAttempts(user);
+    const userExists = !!user;
 
-    const isValidPassword = this.cryptoService.comparePassword(password, user.password_hash);
-    
-    if (!isValidPassword) {
+    // Always increment attempts first to prevent bypass
+    if (userExists) {
       await this.userRepository.incrementFailedAttempts(user.id);
-      throw new AuthenticationError("Invalid password");
     }
 
+    // Perform timing-safe password comparison
+    const isValidPassword = await this.timingSafeService.safeComparePassword(
+      password, 
+      user?.password_hash || null, 
+      userExists
+    );
+
+    // Validate user access and password requirements only if user exists
+    if (userExists) {
+      try {
+        this.userValidator.validateUserAccess(user);
+        this.userValidator.validatePassword(user);
+        this.userValidator.validatePasswordAttempts(user);
+      } catch (error) {
+        // User validation failed, but we already incremented attempts
+        throw error;
+      }
+    }
+
+    if (!isValidPassword || !userExists) {
+      throw new AuthenticationError("Invalid credentials");
+    }
+
+    // Reset attempts only on successful authentication
     await this.userRepository.resetFailedAttempts(user.id);
 
     const timestamp = Math.floor(Date.now() / 1000);

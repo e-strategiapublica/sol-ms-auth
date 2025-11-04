@@ -21,7 +21,7 @@ export const jwtConfig: JWTConfig = {
 export const generateToken = (payload: JWTPayload): string => {
   return jwt.sign(payload, jwtConfig.secret, {
     expiresIn: jwtConfig.expiresIn,
-  });
+  } as any);
 };
 
 export const verifyToken = (token: string): JWTPayload => {

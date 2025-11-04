@@ -15,7 +15,7 @@ class AuthController {
       res.set("Link", `</users/${result.user_id}>; rel="related"`);
       res.status(200).json({ token: result.token });
     } catch (error) {
-      ErrorHandler.handleAuthError(error, res);
+      ErrorHandler.handleAuthError(error, res, req);
     }
   }
 
@@ -29,7 +29,7 @@ class AuthController {
         message: "Email code sent successfully",
       });
     } catch (error) {
-      ErrorHandler.handleEmailSendError(error, res);
+      ErrorHandler.handleEmailSendError(error, res, req);
     }
   }
 
@@ -44,7 +44,7 @@ class AuthController {
       res.set("Link", `</users/${result.user_id}>; rel="related"`);
       res.status(200).json({ token: result.token });
     } catch (error) {
-      ErrorHandler.handleAuthError(error, res);
+      ErrorHandler.handleAuthError(error, res, req);
     }
   }
 }

@@ -3,29 +3,62 @@ import type {
   IUserRepository, 
   ITokenService, 
   ICryptoService, 
-  IUserValidator 
+  IUserValidator,
+  ITimingSafeService
 } from "../interfaces/auth.interfaces";
 import type { AuthResponse } from "../types/auth";
+import { AuthenticationError, UserNotFoundError } from "../services/user-validator.service";
 
 export class EmailAuthStrategy implements IAuthenticationStrategy {
   constructor(
     private userRepository: IUserRepository,
     private tokenService: ITokenService,
     private cryptoService: ICryptoService,
-    private userValidator: IUserValidator
+    private userValidator: IUserValidator,
+    private timingSafeService: ITimingSafeService
   ) {}
 
   async authenticate(identifier: string, params: any, existingToken?: string): Promise<AuthResponse> {
     const { code } = params;
     const user = await this.userRepository.findByEmail(identifier);
-    
-    this.userValidator.validateUserAccess(user);
-    this.userValidator.validateEmailCode(user, code);
+    const userExists = !!user;
 
-    if (this.cryptoService.isEmailCodeExpired(new Date(user.email_code_expires_at))) {
-      throw new Error("Email code expired");
+    // Always increment attempts first to prevent bypass
+    if (userExists) {
+      await this.userRepository.incrementFailedAttempts(user.id);
     }
 
+    // Perform timing-safe code comparison
+    const isValidCode = await this.timingSafeService.safeCompareEmailCode(
+      code,
+      user?.email_code || null,
+      userExists
+    );
+
+    // Validate user access and code requirements only if user exists
+    if (userExists) {
+      try {
+        this.userValidator.validateUserAccess(user);
+        
+        // Check if code exists and is not expired
+        if (!user.email_code || !user.email_code_expires_at) {
+          throw new AuthenticationError("No active email code");
+        }
+
+        if (this.cryptoService.isEmailCodeExpired(new Date(user.email_code_expires_at))) {
+          throw new AuthenticationError("Email code expired");
+        }
+      } catch (error) {
+        // User validation failed, but we already incremented attempts
+        throw error;
+      }
+    }
+
+    if (!isValidCode || !userExists) {
+      throw new AuthenticationError("Invalid credentials");
+    }
+
+    // Reset attempts only on successful authentication
     await this.userRepository.resetFailedAttempts(user.id);
 
     const timestamp = Math.floor(Date.now() / 1000);
