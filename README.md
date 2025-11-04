@@ -235,8 +235,12 @@ Este projeto implementa rigorosamente os **princípios SOLID** para garantir có
 ## 🔒 Segurança
 
 - **Autenticação JWT** com claims específicas conforme spec IAM
-- **Hash de senhas** com bcrypt e salt
+- **Hash de senhas** com bcrypt e salt configurável
 - **Códigos temporários** com expiração para email
-- **Controle de tentativas** falhadas de login
-- **Middleware de validação** de entrada
+- **Account lockout progressivo** (5min até 24h baseado em tentativas)
+- **Rate limiting** por IP e email (proteção contra brute-force)
+- **Timing attack protection** com comparações de tempo constante
+- **Input sanitization** com validação rigorosa
+- **User enumeration protection** com mensagens genéricas
+- **Security logging** com mascaramento de dados sensíveis
 - **Headers Link** corretos nas respostas

@@ -269,7 +269,7 @@ A refatoração mantém **100% de compatibilidade** com o código existente atra
 
 ## Melhorias de Segurança Implementadas
 
-### **🛡️ Proteções Contra Ataques Implementadas**
+### Proteções Contra Ataques Implementadas
 
 | Vulnerabilidade | Solução SOLID | Princípio Aplicado |
 |----------------|---------------|-------------------|
@@ -279,7 +279,7 @@ A refatoração mantém **100% de compatibilidade** com o código existente atra
 | **Input Injection** | `InputSanitizerService` com validação rigorosa | SRP - Sanitização dedicada |
 | **Information Disclosure** | `SecurityLoggerService` com mascaramento | SRP - Logging seguro |
 
-### **📊 Métricas de Segurança**
+### Métricas de Segurança
 
 - **Rate Limiting**: 3 tentativas por 10 minutos (auth) / 5 minutos (email)
 - **Account Lockout**: Progressivo de 5 minutos até 24 horas
@@ -287,7 +287,7 @@ A refatoração mantém **100% de compatibilidade** com o código existente atra
 - **Input Validation**: 100% dos inputs sanitizados
 - **Security Logging**: Todos os eventos auditados com mascaramento
 
-### **🏗️ Benefícios da Arquitetura SOLID na Segurança**
+### Benefícios da Arquitetura SOLID na Segurança
 
 1. **Testabilidade**: Cada componente de segurança pode ser testado isoladamente
 2. **Manutenibilidade**: Fácil identificação e correção de vulnerabilidades
@@ -295,11 +295,11 @@ A refatoração mantém **100% de compatibilidade** com o código existente atra
 4. **Configurabilidade**: Diferentes níveis de segurança por ambiente
 5. **Auditabilidade**: Logs centralizados e padronizados
 
-### **🎯 Resultado Final**
+### Resultado Final
 
 A implementação SOLID permitiu criar um sistema de autenticação:
-- ✅ **Seguro**: Protegido contra ataques comuns
-- ✅ **Robusto**: Com múltiplas camadas de proteção
-- ✅ **Manutenível**: Com responsabilidades bem definidas
-- ✅ **Extensível**: Facilmente adaptável para novos requisitos
-- ✅ **Testável**: Com componentes isolados e mockáveis
+- **Seguro**: Protegido contra ataques comuns
+- **Robusto**: Com múltiplas camadas de proteção
+- **Manutenível**: Com responsabilidades bem definidas
+- **Extensível**: Facilmente adaptável para novos requisitos
+- **Testável**: Com componentes isolados e mockáveis

@@ -160,10 +160,10 @@ curl -X POST http://localhost:3000/method/email/send \
 
 #### **3. Verificar Logs do Servidor**
 ```
-📧 [DEV] Using MailHog for email testing (http://localhost:8025)
-📧 [DEV] Email sent via MailHog for teste@example.com
-📧 [DEV] Code: 596411 (expires in 300s)
-📧 [DEV] Check MailHog interface: http://localhost:8025
+[DEV] Using MailHog for email testing (http://localhost:8025)
+[DEV] Email sent via MailHog for teste@example.com
+[DEV] Code: 596411 (expires in 300s)
+[DEV] Check MailHog interface: http://localhost:8025
 ```
 
 #### **4. Autenticar com Código**
@@ -265,22 +265,22 @@ curl -X DELETE http://localhost:8025/api/v1/messages/{id}
 
 ### **Em Desenvolvimento (com MailHog):**
 ```
-📧 [DEV] Using MailHog for email testing (http://localhost:8025)
-📧 [DEV] Email sent via MailHog for teste@example.com
-📧 [DEV] Code: 123456 (expires in 300s)
-📧 [DEV] Check MailHog interface: http://localhost:8025
+[DEV] Using MailHog for email testing (http://localhost:8025)
+[DEV] Email sent via MailHog for teste@example.com
+[DEV] Code: 123456 (expires in 300s)
+[DEV] Check MailHog interface: http://localhost:8025
 ```
 
 ### **Em Desenvolvimento (sem MailHog rodando):**
 ```
-📧 [DEV] Using MailHog for email testing (http://localhost:8025)
+[DEV] Using MailHog for email testing (http://localhost:8025)
 Error sending email via MailHog: Error: connect ECONNREFUSED 127.0.0.1:1025
-💡 Make sure MailHog is running: docker run -p 1025:1025 -p 8025:8025 mailhog/mailhog
+Make sure MailHog is running: docker run -p 1025:1025 -p 8025:8025 mailhog/mailhog
 ```
 
 ### **Em Produção (com SMTP):**
 ```
-📧 Email sent to user@example.com
+Email sent to user@example.com
 ```
 
 ## Troubleshooting
@@ -446,4 +446,4 @@ Content-Type: text/html; charset=utf-8
 
 ---
 
-**MailHog configurado com arquitetura SOLID - Pronto para desenvolvimento e produção! 🎉**
+**MailHog configurado com arquitetura SOLID - Pronto para desenvolvimento e produção!**

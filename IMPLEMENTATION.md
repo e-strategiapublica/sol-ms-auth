@@ -1,6 +1,6 @@
 # Implementação dos Endpoints de Autenticação
 
-## ✅ Implementação Concluída com Segurança Avançada
+## Implementação Concluída com Segurança Avançada
 
 Foram implementados os três endpoints de autenticação conforme especificação, **com melhorias críticas de segurança**:
 
@@ -113,9 +113,9 @@ Isso criará um usuário de teste:
 - **Senha**: `123456`
 - **Funcionalidades**: Suporte a todas as rotas de autenticação
 
-## 🛡️ Funcionalidades de Segurança Implementadas
+## Funcionalidades de Segurança Implementadas
 
-### **🔐 Segurança Avançada:**
+### **Segurança Avançada:**
 - **Hash de senhas** com bcrypt e salt configurável
 - **Códigos de email** com expiração (300s padrão)
 - **Account lockout progressivo**: 5min → 15min → 1h → 6h → 24h
@@ -125,19 +125,19 @@ Isso criará um usuário de teste:
 - **User enumeration protection** com mensagens genéricas
 - **Security logging** com mascaramento de dados sensíveis
 
-### **🚫 Proteções Contra Ataques:**
+### **Proteções Contra Ataques:**
 - **Brute Force**: Rate limiting + account lockout progressivo
 - **Timing Attacks**: Comparações sempre executadas em tempo constante
 - **User Enumeration**: Respostas sempre genéricas
 - **Input Injection**: Sanitização completa de entrada
 - **Information Disclosure**: Logs mascarados + mensagens padronizadas
 
-### **📊 Rate Limiting Configurado:**
+### **Rate Limiting Configurado:**
 - **Autenticação**: 3 tentativas por 10 minutos (strict)
 - **Email**: 3 tentativas por 5 minutos por IP e por email
 - **Cleanup automático** de entradas expiradas
 
-### **⏰ Account Lockout Progressivo:**
+### **Account Lockout Progressivo:**
 ```
 5 tentativas  → 5 minutos de lockout
 10 tentativas → 15 minutos de lockout  
@@ -147,27 +147,27 @@ Isso criará um usuário de teste:
 50+ tentativas → Bloqueio permanente
 ```
 
-### **📝 Security Logging:**
+### **Security Logging:**
 - **Failed auth attempts** com IP e email mascarado
 - **Rate limit exceeded** com endpoint e IP
 - **Suspicious activities** para erros inesperados
 - **Timestamps** em formato ISO para auditoria
 
-### **✅ Conformidade com Especificação IAM:**
+### **Conformidade com Especificação IAM:**
 - Estrutura de tokens JWT conforme spec
 - Headers Link corretos
 - Status codes HTTP apropriados
 - Formato de erro padronizado
 - Suporte a tokens existentes
 
-### **🏗️ Robustez & Manutenibilidade:**
+### **Robustez & Manutenibilidade:**
 - **Arquitetura SOLID** com responsabilidades bem definidas
 - **Injeção de dependência** para facilitar testes
 - **Strategy Pattern** para diferentes métodos de autenticação
 - **Error handling** centralizado e consistente
 - **Interfaces bem definidas** para extensibilidade
 
-## 🧪 Como Testar com Usuário de Teste
+## Como Testar com Usuário de Teste
 
 Após executar `npm run seeds`, use o usuário criado:
 
@@ -205,7 +205,7 @@ curl -X POST http://localhost:3000/method/pass \
 Invoke-RestMethod -Uri "http://localhost:3000/method/pass" -Method POST -Body '{"identifier":"test@example.com","params":{"password":"123456"}}' -ContentType "application/json"
 ```
 
-## 📊 Monitoramento de Segurança
+## Monitoramento de Segurança
 
 ### **Logs de Segurança**
 ```bash
@@ -219,14 +219,14 @@ Invoke-RestMethod -Uri "http://localhost:3000/method/pass" -Method POST -Body '{
 - Acesse `http://localhost:8025` para ver emails capturados em desenvolvimento
 - Códigos de email aparecerão aqui para teste
 
-## ✅ Status da Implementação
+## Status da Implementação
 
 A implementação está **completa, segura e pronta para produção** com:
 
-- ✅ **Todos os endpoints** implementados conforme especificação
-- ✅ **Segurança avançada** contra ataques comuns
-- ✅ **Arquitetura SOLID** para manutenibilidade
-- ✅ **Rate limiting** e proteções robustas
-- ✅ **Logging de segurança** para monitoramento
-- ✅ **Testes automatizados** via seeds
-- ✅ **Documentação completa** e atualizada
+- **Todos os endpoints** implementados conforme especificação
+- **Segurança avançada** contra ataques comuns
+- **Arquitetura SOLID** para manutenibilidade
+- **Rate limiting** e proteções robustas
+- **Logging de segurança** para monitoramento
+- **Testes automatizados** via seeds
+- **Documentação completa** e atualizada
