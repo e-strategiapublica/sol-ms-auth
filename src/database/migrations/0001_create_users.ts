@@ -2,7 +2,7 @@ import { Kysely, sql } from "kysely";
 import type { Database } from "../../types/database";
 
 export async function up(db: Kysely<Database>): Promise<void> {
-  db.schema
+  await db.schema
     .createTable("user")
     .ifNotExists()
     .addColumn("id", "serial", (col) => col.primaryKey())
@@ -32,5 +32,5 @@ export async function up(db: Kysely<Database>): Promise<void> {
 }
 
 export async function down(db: Kysely<Database>): Promise<void> {
-  db.schema.dropTable("user").ifExists().execute();
+  await db.schema.dropTable("user").ifExists().execute();
 }
