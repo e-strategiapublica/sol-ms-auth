@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon --watch dist --exec node dist/server.js",
+    "dev": "nodemon",
     "build": "tsc",
     "migrations:up": "tsx src/database/migration.ts up",
     "migrations:down": "tsx src/database/migration.ts down",
