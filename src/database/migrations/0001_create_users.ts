@@ -16,7 +16,7 @@ export async function up(db: Kysely<Database>): Promise<void> {
     .addColumn("failed_login_attempts", "integer", (col) =>
       col.notNull().defaultTo(0)
     )
-    .addColumn("last_login_ip ", "varchar")
+    .addColumn("last_login_ip", "varchar")
     .addColumn("last_login_at", "timestamp")
     .addColumn("recovery_code", "varchar")
     .addColumn("recovery_code_expires_at", "timestamp")
