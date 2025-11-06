@@ -1,10 +1,10 @@
 import type { Request, Response } from "express";
 import userService from "../services/user.service.js";
 import type { NewUser, UserUpdate } from "../types/database.js";
-import bcrypt from "bcryptjs";
 import typia from "typia";
 import type {
   ICreateUserRequest,
+  IGetUserPathParams,
   IGetUsersQueryParams,
   IUpdateUserRequest,
 } from "../types/index.d.js";
@@ -29,8 +29,18 @@ export const createUser = async (req: Request, res: Response) => {
 };
 
 export const getUserById = async (req: Request, res: Response) => {
-  const id = Number(req.params.id);
-  const user = await userService.getUserById(id);
+  const pathParamsValidation = typia.validateEquals<IGetUserPathParams>(
+    req.params
+  );
+  if (!pathParamsValidation.success)
+    return res.status(400).json({
+      error: "Validation Error",
+      details: pathParamsValidation.errors,
+    });
+
+  const user = await userService.getUserById(
+    pathParamsValidation.data.id as number
+  );
   const statusCode = user ? 200 : 404;
   res.status(statusCode).json(user);
 };
