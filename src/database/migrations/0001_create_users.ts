@@ -29,8 +29,24 @@ export async function up(db: Kysely<Database>): Promise<void> {
       col.defaultTo(sql`now()`).notNull()
     )
     .execute();
+
+  await db.schema
+    .createIndex("idx_user_is_active")
+    .ifNotExists()
+    .on("user")
+    .column("is_active")
+    .execute();
+
+  await db.schema
+    .createIndex("idx_user_deleted_at")
+    .ifNotExists()
+    .on("user")
+    .column("deleted_at")
+    .execute();
 }
 
 export async function down(db: Kysely<Database>): Promise<void> {
   await db.schema.dropTable("user").ifExists().execute();
+  await db.schema.dropIndex("idx_user_is_active").ifExists().execute();
+  await db.schema.dropIndex("idx_user_deleted_at").ifExists().execute();
 }
