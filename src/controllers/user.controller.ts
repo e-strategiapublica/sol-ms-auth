@@ -1,78 +1,71 @@
 import type { Request, Response } from "express";
 import userService from "../services/user.service.js";
 import type { NewUser, UserUpdate } from "../types/database.js";
-import typia from "typia";
 import type {
-  ICreateUserRequest,
+  IDeleteUserPathParams,
   IGetUserPathParams,
   IGetUsersQueryParams,
-  IUpdateUserRequest,
+  IUpdateUserPathParams,
 } from "../types/index.d.js";
 import { cryptPassword } from "../utils/index.js";
+import {
+  ValidateBody,
+  ValidateParams,
+  ValidateQuery,
+} from "../decorators/validation.js";
+import {
+  CreateUserBodyValidator,
+  DeleteUserPathParamsValidator,
+  GetUserPathParamsValidator,
+  GetUsersQueryParamsValidator,
+  UpdateUserBodyValidator,
+  UpdateUserParamsValidator,
+} from "../validators/userControllerValidators.js";
 
-export const createUser = async (req: Request, res: Response) => {
-  const validation = typia.validate<ICreateUserRequest>(req.body);
-  if (!validation.success) {
-    return res.status(400).json({
-      error: "Validation Error",
-      details: validation.errors,
-    });
+export class UserController {
+  @ValidateParams(GetUserPathParamsValidator)
+  public async getUserById(req: Request<IGetUserPathParams>, res: Response) {
+    const user = await userService.getUserById(req.params.id as number);
+    if (!user) throw new Error("User not found");
+    res.status(200).json(user);
   }
-  const password_hash = await cryptPassword(validation.data.password);
-  const userData: NewUser = {
-    email: validation.data.email,
-    password_hash: password_hash,
-  };
 
-  const newUser = await userService.createUser(userData);
-  res.status(201).json(newUser);
-};
-
-export const getUserById = async (req: Request, res: Response) => {
-  const pathParamsValidation = typia.validateEquals<IGetUserPathParams>(
-    req.params
-  );
-  if (!pathParamsValidation.success)
-    return res.status(400).json({
-      error: "Validation Error",
-      details: pathParamsValidation.errors,
-    });
-
-  const user = await userService.getUserById(
-    pathParamsValidation.data.id as number
-  );
-  const statusCode = user ? 200 : 404;
-  res.status(statusCode).json(user);
-};
-
-export const getUsers = async (req: Request, res: Response) => {
-  const queryParams: IGetUsersQueryParams = req.query;
-  const validation = typia.validate<IGetUsersQueryParams>(queryParams);
-  const filter = validation.success ? validation.data : {};
-  const users = await userService.getUsers(filter);
-  res.status(200).json(users);
-};
-
-export const updateUser = async (req: Request, res: Response) => {
-  const id = Number(req.params.id);
-  const validation = typia.validate<IUpdateUserRequest>(req.body);
-  if (!validation.success) {
-    return res.status(400).json({
-      error: "Validation Error",
-      details: validation.errors,
-    });
-  }
-  const userData: UserUpdate & { password?: string } = { ...validation.data };
-  if (validation.data.password) {
-    userData.password_hash = await cryptPassword(validation.data.password);
+  @ValidateBody(CreateUserBodyValidator)
+  public async createUser(req: Request, res: Response) {
+    const password_hash = await cryptPassword(req.body.password);
+    const userData: NewUser & { password?: string } = {
+      ...req.body,
+      password_hash: password_hash,
+    };
     delete userData.password;
-  }
-  const updatedUser = await userService.updateUser(id, userData);
-  res.status(200).json(updatedUser);
-};
 
-export const deleteUser = async (req: Request, res: Response) => {
-  const id = Number(req.params.id);
-  await userService.deleteUser(id);
-  res.status(204).send();
-};
+    const newUser = await userService.createUser(userData);
+    res.status(201).json(newUser);
+  }
+
+  @ValidateQuery(GetUsersQueryParamsValidator)
+  public async getUsers(req: Request<IGetUsersQueryParams>, res: Response) {
+    const users = await userService.getUsers(req.query);
+    res.status(200).json(users);
+  }
+
+  @ValidateBody(UpdateUserBodyValidator)
+  @ValidateParams(UpdateUserParamsValidator)
+  public async updateUser(req: Request<IUpdateUserPathParams>, res: Response) {
+    const id = Number(req.params.id);
+    const userData: UserUpdate & { password?: string } = { ...req.body };
+    if (userData.password) {
+      userData.password_hash = await cryptPassword(userData.password);
+      delete userData.password;
+    }
+    const updatedUser = await userService.updateUser(id, userData);
+    res.status(200).json(updatedUser);
+  }
+
+  @ValidateParams(DeleteUserPathParamsValidator)
+  public async deleteUser(req: Request<IDeleteUserPathParams>, res: Response) {
+    const id = Number(req.params.id);
+    await userService.deleteUser(id);
+    res.status(204).send();
+  }
+}

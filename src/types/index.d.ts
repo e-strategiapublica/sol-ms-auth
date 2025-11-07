@@ -1,3 +1,4 @@
+import type typia from "typia";
 import type { Pattern } from "typia/lib/tags";
 
 export interface ICreateUserRequest {
@@ -10,10 +11,20 @@ export interface IUpdateUserRequest {
   password?: string;
 }
 
-export interface IGetUsersQueryParams {
+export interface ValidationType {}
+
+export interface IGetUsersQueryParams extends ValidationType {
   email?: string;
 }
 
 export interface IGetUserPathParams {
+  id: (string & Pattern<"^[0-9]+$">) | number;
+}
+
+export interface IUpdateUserPathParams {
+  id: (string & Pattern<"^[0-9]+$">) | number;
+}
+
+export interface IDeleteUserPathParams {
   id: (string & Pattern<"^[0-9]+$">) | number;
 }
