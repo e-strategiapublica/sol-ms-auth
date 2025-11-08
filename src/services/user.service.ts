@@ -10,6 +10,7 @@ const createUser = async (data: ICreateUserRequest) => {
   const password_hash = await cryptPassword(data.password);
   const userData: NewUser & { password?: string } = {
     ...data,
+    email: data.email.toLowerCase().trim(),
     password_hash: password_hash,
   };
   delete userData.password;

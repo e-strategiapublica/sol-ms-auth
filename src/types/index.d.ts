@@ -1,14 +1,14 @@
 import type typia from "typia";
-import type { Pattern } from "typia/lib/tags";
+import type { MaxLength, MinLength, Pattern } from "typia/lib/tags";
 
 export interface ICreateUserRequest {
   email: string;
-  password: string;
+  password: string & MinLength<8>;
 }
 
 export interface IUpdateUserRequest {
   email?: string;
-  password?: string;
+  password?: string & MinLength<8>;
 }
 
 export interface ValidationType {}
