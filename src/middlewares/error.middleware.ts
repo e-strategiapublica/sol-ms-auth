@@ -9,7 +9,7 @@ export const ErrorHandlingMiddleware: ErrorRequestHandler = (
   next
 ) => {
   let err = originalErr;
-  console.log(err, err instanceof ValidationError);
+
   if (err instanceof TypeGuardError) {
     const { expected, value, path } = err;
     err = new ValidationError([{ expected, value, path: path || "" }]);

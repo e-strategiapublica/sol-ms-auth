@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
 import userService from "../services/user.service.js";
-import type { NewUser, UserUpdate } from "../types/database.js";
+import type { UserUpdate } from "../types/database.js";
 import type {
   IDeleteUserPathParams,
   IGetUserPathParams,
@@ -32,14 +32,7 @@ export class UserController {
 
   @ValidateBody(CreateUserBodyValidator)
   public async createUser(req: Request, res: Response) {
-    const password_hash = await cryptPassword(req.body.password);
-    const userData: NewUser & { password?: string } = {
-      ...req.body,
-      password_hash: password_hash,
-    };
-    delete userData.password;
-
-    const newUser = await userService.createUser(userData);
+    const newUser = await userService.createUser(req.body);
     res.status(201).json(newUser);
   }
 
