@@ -20,14 +20,14 @@ export const findById = async (id: number) => {
 };
 
 export const findAll = async (filter: IGetUsersQueryParams) => {
-  let query = db.selectFrom("user").selectAll();
-  for (const key of Object.keys(filter) as (keyof IGetUsersQueryParams)[]) {
-    const value = filter[key];
-    if (value !== undefined) {
-      query = query.where(key, "=", value);
-    }
+  const page = (filter.page as number) || 1;
+  const limit = Math.min((filter.limit as number) || 20, 100); // Máximo 100
+  const offset = (page - 1) * limit;
+  let query = db.selectFrom("user").selectAll().where("deleted_at", "is", null);
+  if (filter.email) {
+    query = query.where("email", "=", filter.email);
   }
-  return await query.execute();
+  return await query.limit(limit).offset(offset).execute();
 };
 
 export const update = async (id: number, userData: Partial<UserUpdate>) => {

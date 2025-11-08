@@ -15,6 +15,8 @@ export interface ValidationType {}
 
 export interface IGetUsersQueryParams extends ValidationType {
   email?: string;
+  page?: (string & Pattern<"^[0-9]+$">) | number;
+  limit?: (string & Pattern<"^[0-9]+$">) | number;
 }
 
 export interface IGetUserPathParams {
