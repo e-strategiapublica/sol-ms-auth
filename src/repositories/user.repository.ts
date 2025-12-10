@@ -1,11 +1,29 @@
 import { db } from "../config/db";
 import type { User, NewUser, UserUpdate } from "../types/database";
+import type { IGetUsersQueryParams } from "../types/index";
 
-const findAll = async (): Promise<User[]> => {
-  return await db.selectFrom("user").selectAll().execute();
+// ===============================
+// FIND FUNCTIONS
+// ===============================
+
+export const findAll = async (filter?: IGetUsersQueryParams): Promise<User[]> => {
+  const page = Number(filter?.page ?? 1);
+  const limit = Math.min(Number(filter?.limit ?? 20), 100);
+  const offset = (page - 1) * limit;
+
+  let query = db
+    .selectFrom("user")
+    .selectAll()
+    .where("deleted_at", "is", null);
+
+  if (filter?.email) {
+    query = query.where("email", "=", filter.email);
+  }
+
+  return await query.limit(limit).offset(offset).execute();
 };
 
-const findByEmail = async (email: string): Promise<User | undefined> => {
+export const findByEmail = async (email: string): Promise<User | undefined> => {
   return await db
     .selectFrom("user")
     .selectAll()
@@ -13,7 +31,7 @@ const findByEmail = async (email: string): Promise<User | undefined> => {
     .executeTakeFirst();
 };
 
-const findById = async (id: number): Promise<User | undefined> => {
+export const findById = async (id: number): Promise<User | undefined> => {
   return await db
     .selectFrom("user")
     .selectAll()
@@ -21,7 +39,11 @@ const findById = async (id: number): Promise<User | undefined> => {
     .executeTakeFirst();
 };
 
-const create = async (user: NewUser): Promise<User> => {
+// ===============================
+// CREATE
+// ===============================
+
+export const create = async (user: NewUser): Promise<User> => {
   return await db
     .insertInto("user")
     .values(user)
@@ -29,7 +51,11 @@ const create = async (user: NewUser): Promise<User> => {
     .executeTakeFirstOrThrow();
 };
 
-const update = async (id: number, updates: UserUpdate): Promise<User | undefined> => {
+// ===============================
+// UPDATE FUNCTIONS
+// ===============================
+
+export const update = async (id: number, updates: UserUpdate): Promise<User | undefined> => {
   return await db
     .updateTable("user")
     .set({
@@ -41,7 +67,7 @@ const update = async (id: number, updates: UserUpdate): Promise<User | undefined
     .executeTakeFirst();
 };
 
-const updateEmailCode = async (
+export const updateEmailCode = async (
   email: string,
   code: string,
   expiresAt: Date
@@ -57,7 +83,7 @@ const updateEmailCode = async (
     .execute();
 };
 
-const updatePassword = async (
+export const updatePassword = async (
   id: number,
   passwordHash: string,
   passwordSalt: string
@@ -73,7 +99,11 @@ const updatePassword = async (
     .execute();
 };
 
-const incrementFailedAttempts = async (id: number): Promise<void> => {
+// ===============================
+// FAILED LOGIN ATTEMPTS
+// ===============================
+
+export const incrementFailedAttempts = async (id: number): Promise<void> => {
   await db
     .updateTable("user")
     .set((eb) => ({
@@ -84,7 +114,7 @@ const incrementFailedAttempts = async (id: number): Promise<void> => {
     .execute();
 };
 
-const resetFailedAttempts = async (id: number): Promise<void> => {
+export const resetFailedAttempts = async (id: number): Promise<void> => {
   await db
     .updateTable("user")
     .set({
@@ -96,16 +126,10 @@ const resetFailedAttempts = async (id: number): Promise<void> => {
     .execute();
 };
 
-const userRepository = {
-  findAll,
-  findByEmail,
-  findById,
-  create,
-  update,
-  updateEmailCode,
-  updatePassword,
-  incrementFailedAttempts,
-  resetFailedAttempts,
-};
+// ===============================
+// DELETE (hard delete)
+// ===============================
 
-export default userRepository;
+export const remove = async (id: number): Promise<void> => {
+  await db.deleteFrom("user").where("id", "=", id).execute();
+};

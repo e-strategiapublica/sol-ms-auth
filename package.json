@@ -7,14 +7,16 @@
     "dev": "nodemon --watch src --exec \"tsx --env-file=.env src/server.ts\"",
     "build": "tsc",
     "migrations:up": "tsx --env-file=.env src/database/migration.ts up",
+    "migrations:down": "tsx --env-file=.env src/database/migration.ts down",
     "seeds": "tsx --env-file=.env src/database/seeder.ts",
     "start": "node dist/server.js",
     "test": "jest --coverage",
     "test:watch": "jest --watch",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix",
-    "typecheck": "tsc --noEmit"
-  },
+    "typecheck": "tsc --noEmit",
+    "prepare": "ts-patch install"
+  }
   "repository": {
     "type": "git",
     "url": "git+https://github.com/e-strategiapublica/sol-ms-auth.git"
@@ -54,7 +56,8 @@
     "prettier": "^3.6.2",
     "supertest": "^7.0.0",
     "ts-jest": "^29.4.5",
+    "ts-patch": "^3.3.0",
     "tsx": "^4.20.6",
-    "typescript": "^5.9.3"
+    "typescript": "~5.9.2"
   }
 }
