@@ -4,10 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon",
+    "dev": "nodemon --watch src --exec \"tsx --env-file=.env src/server.ts\"",
     "build": "tsc",
-    "migrations:up": "tsx src/database/migration.ts up",
-    "migrations:down": "tsx src/database/migration.ts down",
+    "migrations:up": "tsx --env-file=.env src/database/migration.ts up",
+    "migrations:down": "tsx --env-file=.env src/database/migration.ts down",
+    "seeds": "tsx --env-file=.env src/database/seeder.ts",
     "start": "node dist/server.js",
     "test": "jest --coverage",
     "test:watch": "jest --watch",
@@ -15,13 +16,13 @@
     "lint:fix": "eslint . --ext .ts --fix",
     "typecheck": "tsc --noEmit",
     "prepare": "ts-patch install"
-  },
+  }
   "repository": {
     "type": "git",
     "url": "git+https://github.com/e-strategiapublica/sol-ms-auth.git"
   },
   "keywords": [],
-  "author": "",
+  "author": "AnthonySFarias, LucasJordan",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/e-strategiapublica/sol-ms-auth/issues"
@@ -32,14 +33,19 @@
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
     "kysely": "^0.28.8",
+    "nodemailer": "^7.0.10",
     "pg": "^8.16.3",
     "typia": "^9.7.2"
   },
   "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
     "@types/express": "^5.0.3",
     "@types/jest": "^30.0.0",
+    "@types/jsonwebtoken": "^9.0.5",
     "@types/node": "^24.8.0",
+    "@types/nodemailer": "^6.4.14",
     "@types/pg": "^8.15.6",
+    "@types/supertest": "^6.0.2",
     "@typescript-eslint/eslint-plugin": "^8.46.2",
     "@typescript-eslint/parser": "^8.46.2",
     "eslint": "^9.38.0",
@@ -48,6 +54,7 @@
     "jest": "^30.2.0",
     "nodemon": "^3.1.10",
     "prettier": "^3.6.2",
+    "supertest": "^7.0.0",
     "ts-jest": "^29.4.5",
     "ts-patch": "^3.3.0",
     "tsx": "^4.20.6",

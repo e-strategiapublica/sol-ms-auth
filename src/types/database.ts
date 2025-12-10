@@ -12,20 +12,39 @@ export interface Database {
 
 export interface UserTable {
   id: Generated<number>;
+
+  // Identity
   email: string;
-  email_verified?: boolean;
+  name?: string;
+
+  // Auth
   password_hash: string;
-  is_active?: boolean;
-  is_locked?: boolean;
-  failed_login_attempts?: number;
-  last_login_ip?: string;
+  password_salt?: string; // (main não tinha, mas é essencial para segurança)
+
+  // Email verification
+  email_verified?: boolean;
+  email_code?: string;
+  email_code_expires_at?: ColumnType<Date, string | undefined, string | undefined>;
+
+  // Recovery
   recovery_code: string | null;
-  last_login_at: ColumnType<Date, string | undefined, never>;
-  last_password_change_at: ColumnType<Date, string | undefined, never>;
   recovery_code_expires_at: ColumnType<Date, string | undefined, never>;
+
+  // Login control
+  failed_login_attempts: ColumnType<number, number | undefined, number>;
+  is_blocked: ColumnType<boolean, boolean | undefined, boolean>;
+  is_locked?: boolean;
+  last_login_at: ColumnType<Date, string | undefined, never>;
+  last_login_ip?: string;
+  last_password_change_at: ColumnType<Date, string | undefined, never>;
+
+  // User status
+  is_active?: boolean;
   deleted_at: ColumnType<Date, string | undefined, never>;
-  updated_at: ColumnType<Date, string | undefined, never>;
+
+  // Timestamps
   created_at: ColumnType<Date, string | undefined, never>;
+  updated_at: ColumnType<Date, string | undefined, string>;
 }
 
 export type User = Selectable<UserTable>;
