@@ -1,5 +1,7 @@
+import type { SendMailOptions } from "nodemailer";
+
 export interface IEmailTransporter {
-  sendMail(options: any): Promise<any>;
+  sendMail(options: EmailOptions): Promise<unknown>;
 }
 
 export interface IEmailProvider {
@@ -18,12 +20,7 @@ export interface IEmailLogger {
   logCodeGenerated(email: string, code: string): void;
 }
 
-export interface EmailOptions {
-  from: string;
-  to: string;
-  subject: string;
-  html: string;
-}
+export type EmailOptions = SendMailOptions;
 
 export interface EmailConfig {
   host: string;

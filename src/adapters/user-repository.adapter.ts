@@ -1,8 +1,9 @@
 import userRepository from "../repositories/user.repository";
 import type { IUserRepository } from "../interfaces/auth.interfaces";
+import type { User } from "../types/database";
 
 export class UserRepositoryAdapter implements IUserRepository {
-  async findByEmail(email: string): Promise<any> {
+  async findByEmail(email: string): Promise<User | undefined> {
     return await userRepository.findByEmail(email);
   }
 

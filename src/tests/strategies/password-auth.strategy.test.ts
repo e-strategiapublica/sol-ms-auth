@@ -103,7 +103,7 @@ describe("PasswordAuthStrategy - SOLID Unit Tests", () => {
       mockTokenService.updateTokenWithMethod.mockImplementation(() => {
         throw new Error("Invalid token");
       });
-      mockTokenService.createTokenPayload.mockReturnValue({ sub: "1", method: "pass" });
+      mockTokenService.createTokenPayload.mockReturnValue(TEST_CONSTANTS.PASS_TOKEN_PAYLOAD);
       mockTokenService.generateToken.mockReturnValue("new.jwt.token");
 
       const result = await passwordAuthStrategy.authenticate(
@@ -126,7 +126,7 @@ describe("PasswordAuthStrategy - SOLID Unit Tests", () => {
 
       mockUserRepository.findByEmail.mockResolvedValue(mockUser);
       mockTimingSafeService.safeComparePassword.mockResolvedValue(true);
-      mockTokenService.createTokenPayload.mockReturnValue({ sub: "1" });
+      mockTokenService.createTokenPayload.mockReturnValue(TEST_CONSTANTS.PASS_TOKEN_PAYLOAD);
       mockTokenService.generateToken.mockReturnValue("token");
 
       await passwordAuthStrategy.authenticate("test@example.com", {
@@ -264,7 +264,7 @@ describe("PasswordAuthStrategy - SOLID Unit Tests", () => {
 
       mockUserRepository.findByEmail.mockResolvedValue(mockUser);
       mockTimingSafeService.safeComparePassword.mockResolvedValue(true);
-      mockTokenService.createTokenPayload.mockReturnValue({ sub: "1" });
+      mockTokenService.createTokenPayload.mockReturnValue(TEST_CONSTANTS.PASS_TOKEN_PAYLOAD);
       mockTokenService.generateToken.mockReturnValue("token");
 
       await passwordAuthStrategy.authenticate("test@example.com", {
@@ -297,7 +297,7 @@ describe("PasswordAuthStrategy - SOLID Unit Tests", () => {
 
       mockUserRepository.findByEmail.mockResolvedValue(mockUser);
       mockTimingSafeService.safeComparePassword.mockResolvedValue(true);
-      mockTokenService.createTokenPayload.mockReturnValue({ sub: "1" });
+      mockTokenService.createTokenPayload.mockReturnValue(TEST_CONSTANTS.PASS_TOKEN_PAYLOAD);
       mockTokenService.generateToken.mockReturnValue("token");
 
       const result = await passwordAuthStrategy.authenticate("test@example.com", {
@@ -324,7 +324,7 @@ describe("PasswordAuthStrategy - SOLID Unit Tests", () => {
 
       mockUserRepository.findByEmail.mockResolvedValue(mockUser);
       mockTimingSafeService.safeComparePassword.mockResolvedValue(true);
-      mockTokenService.createTokenPayload.mockReturnValue({ sub: "1" });
+      mockTokenService.createTokenPayload.mockReturnValue(TEST_CONSTANTS.PASS_TOKEN_PAYLOAD);
       mockTokenService.generateToken.mockReturnValue("token");
 
       const strategy: import("../../interfaces/auth.interfaces").IAuthenticationStrategy =

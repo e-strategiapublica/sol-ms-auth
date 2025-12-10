@@ -3,7 +3,6 @@ import authController from "../controllers/auth.controller";
 import { createTypiaValidationMiddleware } from "../middlewares/typia-validation.middleware";
 import { createTypiaSecurityLogger } from "../services/typia-security-logger.service";
 import { 
-  authRateLimit, 
   emailRateLimit, 
   strictAuthRateLimit 
 } from "../middlewares/rate-limit.middleware";

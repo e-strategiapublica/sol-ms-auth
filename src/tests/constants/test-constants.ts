@@ -40,6 +40,6 @@ export const TEST_CONSTANTS = {
   MANY_FAILED_ATTEMPTS: 10,
 
   // Token Payloads
-  EMAIL_TOKEN_PAYLOAD: { sub: "1", method: "email" },
-  PASS_TOKEN_PAYLOAD: { sub: "1", method: "pass" },
+  EMAIL_TOKEN_PAYLOAD: { sub: "1", nbf: 0, methods: { email: 0 } },
+  PASS_TOKEN_PAYLOAD: { sub: "1", nbf: 0, methods: { pass: 0 } },
 };

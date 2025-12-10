@@ -1,13 +1,9 @@
 import * as path from "path";
-import { Pool } from "pg";
 import { promises as fs } from "fs";
 import {
-  Kysely,
   Migrator,
-  PostgresDialect,
   FileMigrationProvider,
 } from "kysely";
-import type { Database } from "../types/database";
 import { db } from "../config/db.js";
 
 async function migrateToLatest() {

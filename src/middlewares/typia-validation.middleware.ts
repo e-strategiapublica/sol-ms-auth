@@ -7,26 +7,17 @@ const isDevelopment = process.env.NODE_ENV === "development";
 let validateEmailAuth: any;
 let validatePasswordAuth: any; 
 let validateEmailSend: any;
-let EmailAuthRequest: any;
-let PasswordAuthRequest: any;
-let EmailSendRequest: any;
 
 if (isDevelopment) {
   const manualValidation = require("../types/manual-validation");
   validateEmailAuth = manualValidation.validateEmailAuth;
   validatePasswordAuth = manualValidation.validatePasswordAuth;
   validateEmailSend = manualValidation.validateEmailSend;
-  EmailAuthRequest = manualValidation.EmailAuthRequest;
-  PasswordAuthRequest = manualValidation.PasswordAuthRequest;
-  EmailSendRequest = manualValidation.EmailSendRequest;
 } else {
   const typiaValidation = require("../types/validation");
   validateEmailAuth = typiaValidation.validateEmailAuth;
   validatePasswordAuth = typiaValidation.validatePasswordAuth;
   validateEmailSend = typiaValidation.validateEmailSend;
-  EmailAuthRequest = typiaValidation.EmailAuthRequest;
-  PasswordAuthRequest = typiaValidation.PasswordAuthRequest;
-  EmailSendRequest = typiaValidation.EmailSendRequest;
 }
 
 export interface IValidationMiddleware {

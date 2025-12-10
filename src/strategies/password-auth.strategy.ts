@@ -6,10 +6,10 @@ import type {
   IUserValidator,
   ITimingSafeService
 } from "../interfaces/auth.interfaces";
-import type { AuthResponse } from "../types/auth";
-import { AuthenticationError, UserNotFoundError } from "../services/user-validator.service";
+import type { AuthResponse, PasswordAuthParams } from "../types/auth";
+import { AuthenticationError } from "../services/user-validator.service";
 
-export class PasswordAuthStrategy implements IAuthenticationStrategy {
+export class PasswordAuthStrategy implements IAuthenticationStrategy<PasswordAuthParams> {
   constructor(
     private userRepository: IUserRepository,
     private tokenService: ITokenService,
@@ -18,7 +18,7 @@ export class PasswordAuthStrategy implements IAuthenticationStrategy {
     private timingSafeService: ITimingSafeService
   ) {}
 
-  async authenticate(identifier: string, params: any, existingToken?: string): Promise<AuthResponse> {
+  async authenticate(identifier: string, params: PasswordAuthParams, existingToken?: string): Promise<AuthResponse> {
     const { password } = params;
     const user = await this.userRepository.findByEmail(identifier);
     const userExists = !!user;

@@ -1,4 +1,5 @@
 import type { AuthResponse } from "../types/auth";
+import type { JWTPayload } from "../config/jwt";
 
 export interface IUserRepository {
   findByEmail(email: string): Promise<any>;
@@ -8,9 +9,9 @@ export interface IUserRepository {
 }
 
 export interface ITokenService {
-  generateToken(payload: any): string;
+  generateToken(payload: JWTPayload): string;
   updateTokenWithMethod(existingToken: string, method: string, timestamp: number): string;
-  createTokenPayload(userId: string, method: string, timestamp: number): any;
+  createTokenPayload(userId: string, method: string, timestamp: number): JWTPayload;
 }
 
 export interface IEmailService {
@@ -23,8 +24,8 @@ export interface ICryptoService {
   isEmailCodeExpired(expiresAt: Date): boolean;
 }
 
-export interface IAuthenticationStrategy {
-  authenticate(identifier: string, params: any, existingToken?: string): Promise<AuthResponse>;
+export interface IAuthenticationStrategy<TParams = unknown> {
+  authenticate(identifier: string, params: TParams, existingToken?: string): Promise<AuthResponse>;
 }
 
 export interface IUserValidator {

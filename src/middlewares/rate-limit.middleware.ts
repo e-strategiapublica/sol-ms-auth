@@ -71,7 +71,6 @@ export class RateLimitMiddleware {
       const key = `auth:${clientIP}`;
 
       if (!this.rateLimitService.isAllowed(key, maxAttempts, windowMs)) {
-        const attempts = this.rateLimitService.getAttempts(key);
         this.securityLogger.logRateLimitExceeded(clientIP, req.path);
 
         res.status(429).json({

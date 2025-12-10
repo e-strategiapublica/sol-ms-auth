@@ -200,7 +200,7 @@ describe("EmailAuthStrategy - SOLID Unit Tests", () => {
       mockUserRepository.findByEmail.mockResolvedValue(mockUser);
       mockTimingSafeService.safeCompareEmailCode.mockResolvedValue(true);
       mockCryptoService.isEmailCodeExpired.mockReturnValue(false);
-      mockTokenService.createTokenPayload.mockReturnValue({ sub: "1" });
+      mockTokenService.createTokenPayload.mockReturnValue(TEST_CONSTANTS.EMAIL_TOKEN_PAYLOAD);
       mockTokenService.generateToken.mockReturnValue("token");
 
       await emailAuthStrategy.authenticate(TEST_CONSTANTS.VALID_EMAIL, { code: TEST_CONSTANTS.VALID_CODE });
